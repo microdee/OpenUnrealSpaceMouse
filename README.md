@@ -1,5 +1,5 @@
-# SpaceMouse for Unreal Engine
-Not for Twinmotion. **DO NOT** expect it to work with Twinmotion.
+# Open Unreal SpaceMouse
+Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed to further differentiate this from 3DConnexion's own plugin. Old URL's for "UE4-SpaceMouse" still should work because how Github keeps old-name alive, but update your URL's just in case.
 
 - [SpaceMouse for Unreal Engine](#spacemouse-for-unreal-engine)
 - [Installation](#installation)
