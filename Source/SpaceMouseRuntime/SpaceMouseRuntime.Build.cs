@@ -7,14 +7,10 @@ public class SpaceMouseRuntime : ModuleRules
 {
     public SpaceMouseRuntime(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
         bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
-
-        IsRedistributableOverride = true;
-        bLegalToDistributeObjectCode = true;
-        bPrecompile = true;
-        PrecompileForTargets = PrecompileTargetsType.Any;
 
         if (Target.Version.MajorVersion >= 5)
         {

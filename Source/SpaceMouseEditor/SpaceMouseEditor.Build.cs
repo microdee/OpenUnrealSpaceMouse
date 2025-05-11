@@ -7,14 +7,10 @@ public class SpaceMouseEditor : ModuleRules
 {
     public SpaceMouseEditor(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
         bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
-
-        IsRedistributableOverride = true;;
-        bLegalToDistributeObjectCode = true;
-        bPrecompile = true;
-        PrecompileForTargets = PrecompileTargetsType.Any;
         
         PublicDependencyModuleNames.AddRange(new []
         {

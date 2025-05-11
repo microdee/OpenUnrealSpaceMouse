@@ -8,14 +8,10 @@ public class SpaceMouseReader : ModuleRules
 {
     public SpaceMouseReader(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
         bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
-
-        IsRedistributableOverride = true;
-        bLegalToDistributeObjectCode = true;
-        bPrecompile = true;
-        PrecompileForTargets = PrecompileTargetsType.Any;
         
         PublicDependencyModuleNames.AddRange(new []
         {
@@ -23,7 +19,7 @@ public class SpaceMouseReader : ModuleRules
             "CoreUObject",
             "Engine",
 
-            "HIDUE"
+            "Hidapi"
             // ... add other public dependencies that you statically link with here ...
         });
     }
