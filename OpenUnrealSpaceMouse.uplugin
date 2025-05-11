@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.2.9",
+	"VersionName": "2.0.0",
 	"FriendlyName": "Open Unreal SpaceMouse",
 	"Description": "Control the active editor viewport camera with 3DConnexion SpaceMice",
 	"Category": "Input Devices",
@@ -16,15 +16,6 @@
 	"Installed": true,
 	"RequiresBuildPlatform": false,
 	"Modules": [
-		{
-			"Name": "HIDUE",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Linux",
-				"Win64"
-			]
-		},
 		{
 			"Name": "SpaceMouseReader",
 			"Type": "Runtime",

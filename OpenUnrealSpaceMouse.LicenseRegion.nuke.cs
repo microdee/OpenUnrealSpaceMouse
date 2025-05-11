@@ -8,27 +8,6 @@ using YamlDotNet.Serialization;
 using Nuke.Utilities.Text.Yaml;
 using System.Linq;
 
-public class ThirdPartyAttribution
-{
-    [YamlMember(Alias = "name")]
-    public string? Name;
-
-    [YamlMember(Alias = "source")]
-    public string? Source;
-
-    [YamlMember(Alias = "project")]
-    public string? Project;
-
-    [YamlMember(Alias = "authors")]
-    public string[] Authors = [];
-
-    [YamlMember(Alias = "license")]
-    public string? License;
-
-    [YamlMember(Alias = "reasoning")]
-    public string? Reasoning;
-}
-
 [ImplicitBuildInterface]
 public interface IOpenUnrealSpaceMouseLicenseRegion : INukeBuild
 {
