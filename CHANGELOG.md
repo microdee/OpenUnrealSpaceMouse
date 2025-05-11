@@ -1,14 +1,15 @@
 
-# **1.3** (WIP)
+# **2.0** (WIP)
 
 ### **Goals:**
 
-* [ ] Fix the current roadblock with macOS support.
-* [ ] Use official 3DxWare SDK when it's available on Windows as well (use HID as a fallback)
-  * as per request
-* [ ] Improve axis configuration UX
-* [ ] Per-device model default button bindings
-* [ ] Detect device models through the Universal Receiver
+[ ] Modernize source code
+
+And probably that's it. If there's a miracle and this project gets new momentum then new features will be in 2.1 or something. But this is not a promise.
+
+# **1.3**
+
+That didn't happen.
 
 # **1.2** (Current) (Marketplace)
 

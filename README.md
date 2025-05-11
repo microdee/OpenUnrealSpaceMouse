@@ -1,7 +1,7 @@
-# SpaceMouse for Unreal Engine
-Not for Twinmotion. **DO NOT** expect it to work with Twinmotion.
+# Open Unreal SpaceMouse 2.0
+Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed to further differentiate this from 3DConnexion's own plugin. Old URL's for "UE4-SpaceMouse" still should work because how Github keeps old-name alive, but update your URL's just in case.
 
-- [SpaceMouse for Unreal Engine](#spacemouse-for-unreal-engine)
+- [Open Unreal SpaceMouse](#open-unreal-spacemouse)
 - [Installation](#installation)
   - [Disclaimer about the new official plugin shipped by 3DConnexion](#disclaimer-about-the-new-official-plugin-shipped-by-3dconnexion)
   - [Requirements](#requirements)
@@ -29,13 +29,13 @@ Not for Twinmotion. **DO NOT** expect it to work with Twinmotion.
 
 Demo video: https://youtu.be/owcSTzs8p-8
 
-**[Download manually for free](https://github.com/microdee/UE4-SpaceMouse/releases/latest)**
+**[Download manually for free](https://github.com/microdee/OpenUnrealSpaceMouse/releases/latest)**
 
 **[Buy it via the Marketplace](https://www.unrealengine.com/marketplace/en-US/product/spacemouse-for-unreal-engine)**
 
 **If you have a code project just use this repo as submodule**
 ```
-git submodule add https://github.com/microdee/UE4-SpaceMouse.git Plugins/SpaceMouse
+git submodule add https://github.com/microdee/OpenUnrealSpaceMouse.git Plugins/SpaceMouse
 ```
 
 ## [Disclaimer about the new official plugin shipped by 3DConnexion](DISCLAIMER.md)
@@ -118,11 +118,11 @@ Camera controls are slightly different when controlling an Orthographic viewport
 
 **Display Debug Information** prints HID data onto the viewport. You don't need to change **Max Hid Read Operations Per Frame**. Just ignore it.
 
-[Report bugs](https://github.com/microdee/UE4-SpaceMouse/issues)
+[Report bugs](https://github.com/microdee/OpenUnrealSpaceMouse/issues)
 
-[Have any feedback or ideas? Go to Discussions!](https://github.com/microdee/UE4-SpaceMouse/discussions)
+[Have any feedback or ideas? Go to Discussions!](https://github.com/microdee/OpenUnrealSpaceMouse/discussions)
 
-[UE4 forum (please prefer Github Discussions)](https://forums.unrealengine.com/unreal-engine/feedback-for-epic/437-support-for-space-navigator-3d-mouse?p=1609440#post1609440)
+[Unreal Forum (please prefer Github Discussions)](https://forums.unrealengine.com/unreal-engine/feedback-for-epic/437-support-for-space-navigator-3d-mouse?p=1609440#post1609440)
 
 # More info
 
@@ -142,7 +142,7 @@ Upon updating from prior versions (<= 1.0.x pre-marketplace) please delete both 
 
 ## Build a release
 
-If for any reason you cannot use this plugin as a submodule and you want to make a pre-built release to be an engine plugin, then work with the [official test project](https://github.com/microdee/UE4-SpaceMouse-TestProject) and see the build instructions there.
+If for any reason you cannot use this plugin as a submodule and you want to make a pre-built release to be an engine plugin, then work with the [official test project](https://github.com/microdee/OpenUnrealSpaceMouse-TestProject) and see the build instructions there.
 
 ## Build a release for Linux
 
@@ -162,7 +162,7 @@ To make a pre-built release for Linux, read the [Linux Build Guide](LINUX.md).
   * FIXED
 * Jumping forward periodically when leaning / going forward with the camera
   * __TL;DR:__ Open 3DxWare per-application settings and disable scroll-wheel emulation (disable tilt axis) (per-application settings are opened by the Menu button or bottom left button on your SpaceMouse by default)
-  * [See issue](https://github.com/microdee/UE4-SpaceMouse/issues/12)
+  * [See issue](https://github.com/microdee/OpenUnrealSpaceMouse/issues/12)
 * If you install or update 3DxWare with their new plugin (TDxUnrealEditor), and you had this plugin before, you might experience undefined interaction glitches.
   * Remove either this or the 3DConnexion plugin (TDxUnrealEditor) according to your preference.
 
