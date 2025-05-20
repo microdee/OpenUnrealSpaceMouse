@@ -9,22 +9,24 @@
  *  @date 2025
  */
 
-
-
-#include "SpaceMouseRuntime.h"
-//#include "App.h"
-//#include "Object.h"
-#include "SmInputDevice.h"
+#include "CoreMinimal.h"
+#include "IInputDeviceModule.h"
 #include "Modules/ModuleManager.h"
-#include "TimerManager.h"
-#include "SpaceMouseReader.h"
-#include "SpaceMouseData.h"
+#include "SpaceMouseRuntime/SmInputDevice.h"
 
+class FSpaceMouseRuntimeModule : public IInputDeviceModule
+{
+public:
 
-#define LOCTEXT_NAMESPACE "FSpaceMouseRuntimeModule"
-
-//General Log
-DEFINE_LOG_CATEGORY(SpaceMouseRuntime);
+    /** IModuleInterface implementation */
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
+    virtual bool SupportsDynamicReloading() override { return true; }
+    
+    virtual TSharedPtr<IInputDevice> CreateInputDevice(
+        TSharedRef<FGenericApplicationMessageHandler> const& messageHandler
+    ) override;
+};
 
 void FSpaceMouseRuntimeModule::StartupModule()
 {
@@ -37,11 +39,9 @@ void FSpaceMouseRuntimeModule::ShutdownModule()
 }
 
 TSharedPtr<IInputDevice> FSpaceMouseRuntimeModule::CreateInputDevice(
-    const TSharedRef<FGenericApplicationMessageHandler>& InMessageHandler)
-{
-    return MakeShared<FSmInputDevice>(InMessageHandler);
+    TSharedRef<FGenericApplicationMessageHandler> const& messageHandler
+) {
+    return MakeShared<SpaceMouse::Runtime::FSmInputDevice>(messageHandler);
 }
-
-#undef LOCTEXT_NAMESPACE
     
 IMPLEMENT_MODULE(FSpaceMouseRuntimeModule, SpaceMouseRuntime)

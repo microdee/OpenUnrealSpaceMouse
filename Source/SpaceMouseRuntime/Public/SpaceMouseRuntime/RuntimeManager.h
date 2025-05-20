@@ -1,4 +1,4 @@
-/** @noop License Comment
+﻿/** @noop License Comment
  *  @file
  *  @copyright
  *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
@@ -9,18 +9,19 @@
  *  @date 2025
  */
 
-
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SpaceMouseReader/Manager.h"
 
-#include "SpaceMouseManager.h"
-#include "SmUserSettings.h"
-
-class SPACEMOUSERUNTIME_API FSmRuntimeManager : public FSpaceMouseManager
+namespace SpaceMouse::Runtime
 {
-protected:
-
-    virtual FSmUserSettings GetUserSettings() override;
-};
+	using namespace SpaceMouse::Reader;
+	
+	class SPACEMOUSERUNTIME_API FRuntimeManager : public IManager
+	{
+	public:
+		static FRuntimeManager& Get();
+		virtual FSmUserSettings GetUserSettings() override;
+	};
+}
