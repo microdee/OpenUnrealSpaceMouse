@@ -15,6 +15,12 @@
 	"IsBetaVersion": false,
 	"Installed": true,
 	"RequiresBuildPlatform": false,
+	"Plugins": [
+		{
+			"Name": "Mcro",
+			"Enabled": true
+		}
+	],
 	"Modules": [
 		{
 			"Name": "SpaceMouseReader",

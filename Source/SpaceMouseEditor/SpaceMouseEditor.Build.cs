@@ -20,24 +20,21 @@ public class SpaceMouseEditor : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
-        bEnableUndefinedIdentifierWarnings = false;
-        
-        PublicDependencyModuleNames.AddRange(new []
-        {
-            "Core",
-            "CoreUObject",
-            "Engine",
-            "InputCore",
-            "PropertyEditor",
-
-            "SpaceMouseReader",
-            "SpaceMouseRuntime"
-        });
+        UndefinedIdentifierWarningLevel = WarningLevel.Off;
 
         if (Target.Type == TargetType.Editor)
         {
-            PublicDependencyModuleNames.AddRange(new []
+            PrivateDependencyModuleNames.AddRange(new []
             {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "PropertyEditor",
+
+                "SpaceMouseReader",
+                "SpaceMouseRuntime",
+                
                 "Slate",
                 "SlateCore",
                 "UnrealEd",

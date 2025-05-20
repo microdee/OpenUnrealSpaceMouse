@@ -20,25 +20,22 @@ public class SpaceMouseRuntime : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
-        bEnableUndefinedIdentifierWarnings = false;
-
-        if (Target.Version.MajorVersion >= 5)
-        {
-            PrivateDependencyModuleNames.AddRange(new [] {
-                "ApplicationCore"
-            });
-        }
+        UndefinedIdentifierWarningLevel = WarningLevel.Off;
             
         
         PublicDependencyModuleNames.AddRange(new []
         {
             "Core",
             "CoreUObject",
-            "Engine",
 
             "SpaceMouseReader",
+        });
+
+        PrivateDependencyModuleNames.AddRange(new [] {
+            "ApplicationCore",
+            "Engine",
             "InputCore",
-            "InputDevice"
+            "InputDevice",
         });
     }
 }

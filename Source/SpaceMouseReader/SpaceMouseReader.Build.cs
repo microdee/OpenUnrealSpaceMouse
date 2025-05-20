@@ -21,16 +21,20 @@ public class SpaceMouseReader : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
-        bEnableUndefinedIdentifierWarnings = false;
+        UndefinedIdentifierWarningLevel = WarningLevel.Off;
         
         PublicDependencyModuleNames.AddRange(new []
         {
             "Core",
             "CoreUObject",
-            "Engine",
-
+            
+            "Mcro",
             "Hidapi"
-            // ... add other public dependencies that you statically link with here ...
+        });
+        
+        PrivateDependencyModuleNames.AddRange(new []
+        {
+            "Engine",
         });
     }
 }
