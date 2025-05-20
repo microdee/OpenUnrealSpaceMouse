@@ -27,7 +27,6 @@
 #include "Widgets/Views/STableRow.h"
 #include "Widgets/Views/STreeView.h"
 #include "EditorStyleSet.h"
-#include "SmUeVersion.h"
 
 class FKeyTreeInfo;
 class SComboButton;
@@ -51,11 +50,7 @@ public:
         : _CurrentKey(FKey())
         , _TreeViewWidth(300.f)
         , _TreeViewHeight(400.f)
-#if UE_VERSION >= MAKE_UE_VERSION(5, 1)
         , _Font( FAppStyle::GetFontStyle( TEXT("NormalFont") ) )
-#else
-        , _Font( FEditorStyle::GetFontStyle( TEXT("NormalFont") ) )
-#endif
         , _FilterBlueprintBindable( true )
         , _AllowClear( true )
         {}

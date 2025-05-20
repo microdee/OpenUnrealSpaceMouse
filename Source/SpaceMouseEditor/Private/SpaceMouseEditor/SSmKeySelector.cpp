@@ -12,7 +12,7 @@
 
 
 
-#include "SSmKeySelector.h"
+#include "SpaceMouseEditor/SSmKeySelector.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SComboButton.h"
 #include "Widgets/Input/SComboBox.h"
@@ -22,14 +22,17 @@
 #include "Widgets/Input/SSearchBox.h"
 #include "Styling/CoreStyle.h"
 #include "SListViewSelectorDropdownMenu.h"
-#include "SmUeVersion.h"
 
-#include "SmInputDevice.h"
-#include "SpaceMouseEditor.h"
+#include "SpaceMouseRuntime/SmInputDevice.h"
+#include "SpaceMouseEditor/SmEditorManager.h"
+
+using namespace SpaceMouse::Reader;
+using namespace SpaceMouse::Runtime;
+using namespace SpaceMouse::Editor;
 
 #define LOCTEXT_NAMESPACE "SmKeySelector"
 
-static const FString BigTooltipDocLink = TEXT("Shared/Editor/ProjectSettings");
+FString BigTooltipDocLink = TEXT("Shared/Editor/ProjectSettings");
 
 class FKeyTreeInfo
 {
@@ -92,6 +95,8 @@ public:
 
 void SSmKeySelector::Construct(const FArguments& InArgs)
 {
+    using namespace SpaceMouse::Reader::Buttons;
+    
     SearchText = FText::GetEmpty();
 
     OnKeyChanged = InArgs._OnKeyChanged;
@@ -103,9 +108,9 @@ void SSmKeySelector::Construct(const FArguments& InArgs)
     FKeyTreeItem* SmKeyCategory = new (KeyTreeRoot) FKeyTreeItem(MakeShareable(new FKeyTreeInfo(LOCTEXT("SmKeySelector_SmCategory", "SpaceMouse"), nullptr)));
     TreeRootsForCatgories.Add("SpaceMouse", *SmKeyCategory);
 
-    for(auto SmButton : FAllSmButtons())
+    for (int i = 0; i < static_cast<int>(ECmd::COUNT); ++i)
     {
-        FKey Key = FSmInputDevice::GetKeyFrom(SmButton);
+        FKey Key = FSmInputDevice::GetKeyFrom(AsCmd(i));
         (*SmKeyCategory)->Children.Add(MakeShareable(new FKeyTreeInfo(FText(), MakeShareable(new FKey(Key)))));
     }
 
@@ -246,11 +251,10 @@ FSlateColor SSmKeySelector::GetKeyIconColor() const
 
 FReply SSmKeySelector::ListenForInput()
 {
-    auto& SmModule = FModuleManager::GetModuleChecked<FSpaceMouseEditorModule>("SpaceMouseEditor");
-    if (!bListenForNextInput && !SmModule.SmManager.IsLearning())
+    if (!bListenForNextInput && !FSmEditorManager::Get().IsLearning())
     {
         bListenForNextInput = true;
-        SmModule.SmManager.BeginLearning();
+        FSmEditorManager::Get().BeginLearning();
         return FReply::Handled().CaptureMouse(SharedThis(this)).SetUserFocus(SharedThis(this));
     }
     return FReply::Unhandled();
@@ -258,7 +262,6 @@ FReply SSmKeySelector::ListenForInput()
 
 FReply SSmKeySelector::ProcessHeardInput(FKey KeyHeard)
 {
-    auto& SmModule = FModuleManager::GetModuleChecked<FSpaceMouseEditorModule>("SpaceMouseEditor");
     if (bListenForNextInput)	// TODO: Unnecessary. Keep it for safety?
     {
         // Allow cancellation with Esc key
@@ -267,18 +270,18 @@ FReply SSmKeySelector::ProcessHeardInput(FKey KeyHeard)
             const FScopedTransaction Transaction(LOCTEXT("CancelChangeKey", "Cancel changing Key Value"));
             
             bListenForNextInput = false;
-            SmModule.SmManager.EndLearning();
+            FSmEditorManager::Get().EndLearning();
             return FReply::Handled().ReleaseMouseCapture().ClearUserFocus(EFocusCause::Cleared);
         }
         
         // Only consider input from SpaceMouse
-        if(FSmInputDevice::KeyToSmButtonMap.Contains(KeyHeard))
+        if(FSmInputDevice::GetKeyButtonMap().Contains(KeyHeard))
         {
             const FScopedTransaction Transaction(LOCTEXT("ChangeKey", "Change Key Value"));
             OnKeyChanged.ExecuteIfBound(MakeShareable(new FKey(KeyHeard)));
 
             bListenForNextInput = false;
-            SmModule.SmManager.EndLearning();
+            FSmEditorManager::Get().EndLearning();
             return FReply::Handled().ReleaseMouseCapture().ClearUserFocus(EFocusCause::Cleared);
         }
         return FReply::Unhandled();

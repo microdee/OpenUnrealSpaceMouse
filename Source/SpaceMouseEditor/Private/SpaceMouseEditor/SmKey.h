@@ -9,16 +9,13 @@
  *  @date 2025
  */
 
-
-
-// ReSharper disable CppNonExplicitConvertingConstructor
-// ReSharper disable CppNonExplicitConversionOperator
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "InputCore.h"
+#include "Mcro/Common.h"
 #include "SmKey.generated.h"
+
+namespace mcro = Mcro::Common;
 
 /**
  * A replacement struct for FKeys, only used for custom SpaceMouse key selector
@@ -29,19 +26,16 @@ struct SPACEMOUSEEDITOR_API FSmKey
     GENERATED_BODY()
 
     FSmKey() {}
-    FSmKey(const FKey& InKey);
-    FSmKey(const FName InName);
-    FSmKey(const TCHAR* InName);
-    FSmKey(const ANSICHAR* InName);
-    
-    //UPROPERTY(BlueprintReadWrite)
+
+    template <mcro::CConvertibleTo<FKey> T>
+    FSmKey(T&& t) : Key(Forward<T>(t)) {}
     
     FKey Key {};
     
     bool SerializeFromMismatchedTag(struct FPropertyTag const& Tag, FStructuredArchive::FSlot Slot);
-    bool ExportTextItem(FString& ValueStr, FKey const& DefaultValue, UObject* Parent, int32 PortFlags, UObject* ExportRootScope) const;
+    bool ExportTextItem(FString& ValueStr, FSmKey const& DefaultValue, UObject* Parent, int32 PortFlags, UObject* ExportRootScope) const;
     bool ImportTextItem(const TCHAR*& Buffer, int32 PortFlags, UObject* Parent, FOutputDevice* ErrorText);
-    void PostSerialize(const FArchive& Ar);
+    void PostSerialize(FArchive const& Ar);
     void PostScriptConstruct();
 
     operator FKey() const;
@@ -53,7 +47,7 @@ struct SPACEMOUSEEDITOR_API FSmKey
 };
 
 template<>
-struct TStructOpsTypeTraits<FSmKey> : public TStructOpsTypeTraitsBase2<FSmKey>
+struct TStructOpsTypeTraits<FSmKey> : TStructOpsTypeTraitsBase2<FSmKey>
 {
     enum
     {
@@ -62,6 +56,6 @@ struct TStructOpsTypeTraits<FSmKey> : public TStructOpsTypeTraitsBase2<FSmKey>
         WithImportTextItem = true,
         WithPostSerialize = true,
         WithPostScriptConstruct = true,
-        WithCopy = true,		// Necessary so that TSharedPtr<FKeyDetails> Data is copied around
+        WithCopy = true,
     };
 };

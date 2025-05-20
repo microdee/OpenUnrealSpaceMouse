@@ -9,8 +9,10 @@
  *  @date 2025
  */
 
+#pragma once
 
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
+#include "Mcro/Modules.h"
 
-#include "SpaceMouseEditor.h"
-
-IMPLEMENT_MODULE(FSpaceMouseEditorModule, SpaceMouseEditor)
+class FSpaceMouseEditorModule : public Mcro::Modules::IObservableModule {};

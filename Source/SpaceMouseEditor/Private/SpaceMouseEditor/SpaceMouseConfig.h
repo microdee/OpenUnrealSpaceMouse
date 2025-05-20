@@ -9,18 +9,15 @@
  *  @date 2025
  */
 
-
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SmKey.h"
-#include "SmButtons.h"
 #include "UObject/Interface.h"
-#include "SmUserSettings.h"
 #include "Curves/CurveFloat.h"
 #include "IDetailCustomization.h"
-#include "GameFramework/PlayerInput.h"
+#include "SpaceMouseEditor/SmKey.h"
+#include "SpaceMouseReader/DeviceReader.h"
+#include "SpaceMouseReader/UserSettings.h"
 
 #include "SpaceMouseConfig.generated.h"
 
@@ -60,9 +57,9 @@ class SPACEMOUSEEDITOR_API USpaceMouseConfig : public UObject
 {
     GENERATED_BODY()
 public:
-    USpaceMouseConfig(const FObjectInitializer& ObjectInitializer);
+    USpaceMouseConfig(const FObjectInitializer& oi);
 
-    FSmUserSettings GetUserSettings();
+    FSmUserSettings GetUserSettings() const;
 
     UPROPERTY(EditAnywhere, Config, Category = "Behavior")
     bool ActiveInBackground = false;
@@ -262,19 +259,19 @@ public:
     void GoToSmConfig() const;
     void GoToInputBindings() const;
 
-    static void SetDefaultBindings(bool bAskUser);
-    static void SetCommandBinding(FInputBindingManager& Ibm, FName InCmdCtx, FName InCmd, EV3DCmd SmButton);
-    static void SetCommandBinding(TSharedPtr<FUICommandInfo> InCmd, EV3DCmd SmButton);
+    static void SetDefaultBindings(bool askUser);
+    static void SetCommandBinding(FInputBindingManager& ibm, FName const& cmdCtx, FName cmd, SpaceMouse::Reader::Buttons::ECmd button);
+    static void SetCommandBinding(TSharedPtr<FUICommandInfo> const& cmd, SpaceMouse::Reader::Buttons::ECmd button);
 
 private:
-    void RegisterCustomInputBinding(const FUICommandInfo& Cmd);
-    void HandleUserDefinedChordChanged(const FUICommandInfo& Cmd);
+    void RegisterCustomInputBinding(FUICommandInfo const& cmd);
+    void HandleUserDefinedChordChanged(FUICommandInfo const& cmd);
 };
 
 class FSpaceMouseConfigCustomization : public IDetailCustomization
 {
 public:
-    static TSharedRef< IDetailCustomization > MakeInstance();
+    static TSharedRef<IDetailCustomization> Make();
 
-    virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
+    virtual void CustomizeDetails(IDetailLayoutBuilder& detailBuilder) override;
 };
