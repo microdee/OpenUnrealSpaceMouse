@@ -1,4 +1,4 @@
-/** @noop License Comment
+﻿/** @noop License Comment
  *  @file
  *  @copyright
  *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
@@ -9,6 +9,8 @@
  *  @date 2025
  */
 
-#include "SpaceMouseReader.h"
+#pragma once
 
-IMPLEMENT_MODULE(FSpaceMouseReaderModule, SpaceMouseReader)
+#include "Mcro/LibraryIncludes/Start.h"
+#include "hidapi/hidapi.h"
+#include "Mcro/LibraryIncludes/End.h"

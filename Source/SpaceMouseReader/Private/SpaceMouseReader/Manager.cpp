@@ -1,0 +1,62 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "SpaceMouseReader/Manager.h"
+
+
+namespace SpaceMouse::Reader
+{
+	IManager::IManager()
+	{
+		IDeviceSource::OnRegistered().Add(InferDelegate::From(LifespanGuard, [this](IDeviceSource* devSource)
+		{
+			DeviceSourceCache = IDeviceSource::GetAll();
+			LastError.SyncPull(devSource->LastError);
+		}));
+	}
+
+	void IManager::TickManager(float deltaSecs)
+	{
+		PreviousAccumulatedData = AccumulatedData;
+		AccumulatedData = NormData = {};
+		MovementState.AccumulationReset();
+		
+		for (IDeviceSource* source : DeviceSourceCache)
+		{
+			for (FDevice& device : source->Devices)
+			{
+				AccumulatedData += device.ProcessedData;
+				NormData += device.NormData;
+				MovementState.Accumulate(device.MovementState);
+			}
+		}
+
+		for (auto& pair : Buttons)
+			pair.Value.NormalizePrevious();
+
+		for (uint16 button : AccumulatedData.ButtonQueue)
+		{
+			if (!PreviousAccumulatedData.ButtonQueue.ArrayView().Contains(button))
+				Buttons[Buttons::AsCmd(button - 1)] = true;
+		}
+		for (uint16 button : PreviousAccumulatedData.ButtonQueue)
+		{
+			if (!AccumulatedData.ButtonQueue.ArrayView().Contains(button))
+				Buttons[Buttons::AsCmd(button - 1)] = false;
+		}
+	}
+
+	FBool const& IManager::GetButton(Buttons::ECmd cmd)
+	{
+		return Buttons.FindOrAdd(cmd, FBool(false));
+	}
+
+	bool IManager::IsAnyDeviceAvailable() const
+	{
+		for (IDeviceSource* source : DeviceSourceCache)
+		{
+			if (!source->Devices.IsEmpty()) return true;
+		}
+		return false;
+	}
+}

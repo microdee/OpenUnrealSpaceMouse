@@ -9,21 +9,10 @@
  *  @date 2025
  */
 
-
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+#include "Mcro/Modules.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogSmReader, Log, All);
-
-class SPACEMOUSEREADER_API FSpaceMouseReaderModule : public IModuleInterface
-{
-public:
-
-    /** IModuleInterface implementation */
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
-    virtual bool SupportsDynamicReloading() override { return true; }
-};
+class SPACEMOUSEREADER_API FSpaceMouseReaderModule : public Mcro::Modules::IObservableModule {};
