@@ -16,27 +16,25 @@ DECLARE_LOG_CATEGORY_CLASS(LogSpaceMouseHid, Log, Log);
 
 namespace SpaceMouse::Reader::Hid
 {
-	TObserveModule<FSpaceMouseReaderModule> GObserveModule {
+	TObserveModule<FSpaceMouseReaderModule> GObserveModule {{
+		.OnStartup = []
 		{
-			.OnStartup = []
-			{
-				int32 result = hid_init();
-				ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
-					->WithMessage(TEXT_"Couldn't initialize hidapi library.")
-					->WithDetails(TEXT_"Space-mice navigation devices will not work over USB")
-					->AsFatal()
-				)
-			},
-			.OnShutdown = []
-			{
-				int32 result = hid_exit();
-				ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
-					->WithMessage(TEXT_"hidapi library didn't shut down correctly.")
-					->AsFatal()
-				)
-			}
+			int32 result = hid_init();
+			ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
+				->WithMessage(TEXT_"Couldn't initialize hidapi library.")
+				->WithDetails(TEXT_"Space-mice navigation devices will not work over USB")
+				->AsFatal()
+			)
+		},
+		.OnShutdown = []
+		{
+			int32 result = hid_exit();
+			ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
+				->WithMessage(TEXT_"hidapi library didn't shut down correctly.")
+				->AsFatal()
+			)
 		}
-	};
+	}};
 	
 	FHidDeviceId::FHidDeviceId() : Hash(0) {}
 	FHidDeviceId::FHidDeviceId(uint16 vid, uint16 pid) : VidPid(vid, pid) {}
