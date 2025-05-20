@@ -9,6 +9,10 @@
  *  @date 2025
  */
 
-#include "SpaceMouseReader.h"
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
+#include "Mcro/Modules.h"
+
+class SPACEMOUSEREADER_API FSpaceMouseReaderModule : public Mcro::Modules::IObservableModule {};
 
 IMPLEMENT_MODULE(FSpaceMouseReaderModule, SpaceMouseReader)

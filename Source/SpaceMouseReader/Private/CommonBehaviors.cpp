@@ -15,23 +15,23 @@
 #include "SpaceMouseReader/Public/CommonBehaviors.h"
 
 FVector USmCommonBehaviors::GetOrbitingTranslationDelta(
-    FVector Pivot,
-    FRotator CurrentRotation,
-    FRotator RotationDelta,
-    float Distance,
-    bool bWithRoll
+    const FVector& pivot,
+    const FRotator& currentRotation,
+    FRotator rotationDelta,
+    float distance,
+    bool withRoll
 ) {
-    if (!bWithRoll)
+    if (!withRoll)
     {
-        const float YawCorr = FMath::Abs(FMath::Cos(FMath::DegreesToRadians(CurrentRotation.Pitch)));
-        RotationDelta.Yaw *= YawCorr;
+        const float yawCorr = FMath::Abs(FMath::Cos(FMath::DegreesToRadians(currentRotation.Pitch)));
+        rotationDelta.Yaw *= yawCorr;
     }
 
-    const FMatrix OrbitTr = FTransform(Pivot).ToMatrixWithScale()
-        * FTransform(RotationDelta).ToMatrixWithScale()
-        * FTransform(FVector(-Distance, 0, 0)).ToMatrixWithScale();
+    const FMatrix orbitTr = FTransform(pivot).ToMatrixWithScale()
+        * FTransform(rotationDelta).ToMatrixWithScale()
+        * FTransform(FVector(-distance, 0, 0)).ToMatrixWithScale();
 
-    FVector Ret = OrbitTr.TransformPosition(FVector::ZeroVector);
-    Ret.X = 0;
-    return Ret;
+    FVector ret = orbitTr.TransformPosition(FVector::ZeroVector);
+    ret.X = 0;
+    return ret;
 }

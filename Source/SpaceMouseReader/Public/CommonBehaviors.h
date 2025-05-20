@@ -17,9 +17,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CommonBehaviors.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SPACEMOUSEREADER_API USmCommonBehaviors : public UBlueprintFunctionLibrary
 {
@@ -28,10 +25,10 @@ public:
 
     UFUNCTION(BlueprintPure, Category=SpaceMouse)
     static FVector GetOrbitingTranslationDelta(
-        FVector Pivot,
-        FRotator CurrentRotation,
-        FRotator RotationDelta,
-        float Distance,
-        bool bWithRoll
+        const FVector& pivot,
+        const FRotator& currentRotation,
+        FRotator rotationDelta,
+        float distance,
+        bool withRoll
     );
 };

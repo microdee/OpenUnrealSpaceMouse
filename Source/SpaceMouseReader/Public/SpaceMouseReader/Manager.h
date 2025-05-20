@@ -36,10 +36,9 @@ namespace SpaceMouse::Reader
 		FDeviceOutput NormData;
 		TState<IErrorPtr> LastError;
 		virtual FSmUserSettings GetUserSettings() = 0;
-
-		TMap<Buttons::ECmd, FBool> Buttons;
 		
 	public:
+		TMap<Buttons::ECmd, FBool> Buttons;
 		FMovementState MovementState;
 		
 		virtual void TickManager(float deltaSecs);
