@@ -29,12 +29,12 @@ public class SpaceMouseReader : ModuleRules
             "CoreUObject",
             
             "Mcro",
-            "Hidapi"
         });
         
         PrivateDependencyModuleNames.AddRange(new []
         {
             "Engine",
+            "Hidapi"
         });
     }
 }
