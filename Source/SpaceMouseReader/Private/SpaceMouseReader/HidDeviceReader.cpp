@@ -40,7 +40,7 @@ namespace SpaceMouse::Reader
 			auto readResult = device.Read(OutputBuffer);
 			if (readResult.HasError())
 			{
-				LastError = readResult;
+				LastError = readResult.GetError();
 				break;
 			}
 			if (readResult.GetValue() > 0 && ctr < CVarMaxRead.GetValueOnAnyThread())
@@ -55,5 +55,13 @@ namespace SpaceMouse::Reader
 		if(Received) OnData.Broadcast();
 
 		TickMovementState(output, deltaSecs);
+	}
+
+	Hid::FScopedHidDevice const& IHidDeviceReader::GetDevice()
+	{
+		// TODO: make TInherit support abstract classes
+		static Hid::FScopedHidDevice dummy {};
+		FORCE_CRASH();
+		return dummy;
 	}
 }

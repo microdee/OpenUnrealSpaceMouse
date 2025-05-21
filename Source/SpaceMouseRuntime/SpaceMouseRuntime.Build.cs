@@ -27,6 +27,7 @@ public class SpaceMouseRuntime : ModuleRules
         {
             "Core",
             "CoreUObject",
+            "InputDevice",
 
             "SpaceMouseReader",
         });
@@ -35,7 +36,6 @@ public class SpaceMouseRuntime : ModuleRules
             "ApplicationCore",
             "Engine",
             "InputCore",
-            "InputDevice",
         });
     }
 }

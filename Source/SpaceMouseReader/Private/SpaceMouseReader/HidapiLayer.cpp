@@ -199,6 +199,11 @@ namespace SpaceMouse::Reader::Hid
 		}
 	}
 
+	FScopedHidDevice::FScopedHidDevice()
+	{
+		DeviceOpenResult = IError::Make(new FUnavailable());
+	}
+
 	FScopedHidDevice::~FScopedHidDevice()
 	{
 		if (Device) hid_close(Device);

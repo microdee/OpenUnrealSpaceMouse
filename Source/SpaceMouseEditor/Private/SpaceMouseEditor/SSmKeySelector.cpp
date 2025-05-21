@@ -197,18 +197,9 @@ const FSlateBrush* SSmKeySelector::GetKeyIconImage() const
     {
         const FKey& Key = CurrentKeyValue.GetValue();
         
-// IsDeprecated() and IsBindableToActions() functions of FKey are new in UE 4.24
-#if UE_VERSION >= MAKE_UE_VERSION(4, 24)
         if (Key.IsValid() && (Key.IsDeprecated() || !Key.IsBindableToActions()))
-#else
-        if (Key.IsValid())
-#endif
         {
-#if UE_VERSION >= MAKE_UE_VERSION(5, 1)
             return FAppStyle::GetBrush("Icons.Warning");
-#else
-            return FEditorStyle::GetBrush("Icons.Warning");
-#endif
         }
         return GetIconFromKey(CurrentKeyValue.GetValue());
     }
@@ -222,8 +213,6 @@ FText SSmKeySelector::GetKeyTooltip() const
     {
         const FKey& Key = CurrentKeyValue.GetValue();
         
-// This entire section can only be used after UE 4.24
-#if UE_VERSION >= MAKE_UE_VERSION(4, 24)
         if (Key.IsValid())
         {
             if (Key.IsDeprecated())
@@ -235,7 +224,6 @@ FText SSmKeySelector::GetKeyTooltip() const
                 return LOCTEXT("SmKeySelectorNotBindable", "The selected key can't be bound to actions.");
             }
         }
-#endif
     }
     return LOCTEXT("SmKeySelector", "Select the key value.");
 }
@@ -289,19 +277,12 @@ FReply SSmKeySelector::ProcessHeardInput(FKey KeyHeard)
     return FReply::Unhandled();
 }
 
-// "Is axis?" function name in FKey has changed in UE 4.26
-#if UE_VERSION >= MAKE_UE_VERSION(4, 26)
-#define IS_AXIS() IsButtonAxis()
-#else
-#define IS_AXIS() IsFloatAxis()
-#endif
-
 FReply SSmKeySelector::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
     if (bListenForNextInput)
     {
         // In the case of axis inputs emulating button key presses we ignore the key press in favor of the axis. Key variants will need to be set from the combo box if required.
-        if (InKeyEvent.GetKey().IS_AXIS())
+        if (InKeyEvent.GetKey().IsButtonAxis())
         {
             return FReply::Unhandled();
         }
@@ -581,11 +562,7 @@ bool SSmKeySelector::GetChildrenMatchingSearch(const TArray<FString>& InSearchTo
 
 const FSlateBrush* SSmKeySelector::GetIconFromKey(FKey Key) const
 {
-#if UE_VERSION >= MAKE_UE_VERSION(5, 1)
     return FAppStyle::GetBrush(EKeys::GetMenuCategoryPaletteIcon(Key.GetMenuCategory()));
-#else
-    return FEditorStyle::GetBrush(EKeys::GetMenuCategoryPaletteIcon(Key.GetMenuCategory()));
-#endif
 }
 
 #undef LOCTEXT_NAMESPACE

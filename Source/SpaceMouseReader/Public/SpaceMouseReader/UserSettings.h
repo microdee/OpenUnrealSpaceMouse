@@ -34,7 +34,7 @@ struct FSmMovementSettings
     UPROPERTY(BlueprintReadWrite, Category=SpaceMouse)
     float UnitsPerSec = 1000;
     
-    UPROPERTY(BlueprintReadWrite, Category=SpaceMouse)
+    UPROPERTY()
     FRichCurve Curve {};
 };
 

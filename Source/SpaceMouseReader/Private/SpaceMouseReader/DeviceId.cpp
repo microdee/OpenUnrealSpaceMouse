@@ -23,6 +23,10 @@ namespace SpaceMouse::Reader
 		);
 	}
 
+	FString IDeviceIdBase::ToString() const { FORCE_CRASH(); return {}; }
+
+	uint32 IDeviceIdBase::GetHash() const { FORCE_CRASH(); return 0; }
+
 	FDeviceModelName::FDeviceModelName(FStringView const& name)
 		: Name(name)
 	{}

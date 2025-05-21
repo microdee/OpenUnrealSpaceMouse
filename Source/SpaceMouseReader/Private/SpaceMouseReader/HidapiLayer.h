@@ -110,6 +110,7 @@ namespace SpaceMouse::Reader::Hid
 		FScopedHidDevice& operator = (const FScopedHidDevice&) = delete;
 		
 		FScopedHidDevice(FHidDeviceInfo const& deviceInfo);
+		FScopedHidDevice();
 		~FScopedHidDevice();
 		
 		TMaybe<int32> Read(TArray<uint8>& output) const;

@@ -20,8 +20,10 @@ namespace SpaceMouse::Reader
 
 	class SPACEMOUSEREADER_API IDeviceIdBase : public IHaveType
 	{
-		virtual FString ToString() const = 0;
-		virtual uint32 GetHash() const = 0;
+	public:
+		// TODO: make TInherit support abstract classes
+		virtual FString ToString() const;
+		virtual uint32 GetHash() const;
 
 		friend FORCEINLINE uint32 GetTypeHash(IDeviceIdBase const& self)
 		{

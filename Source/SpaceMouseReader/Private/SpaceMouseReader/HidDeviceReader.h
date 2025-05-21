@@ -18,7 +18,7 @@ namespace SpaceMouse::Reader
 {
 	namespace Hid
 	{
-		class FHidDeviceInfo;
+		struct FHidDeviceInfo;
 		class FScopedHidDevice;
 	}
 	
@@ -29,10 +29,14 @@ namespace SpaceMouse::Reader
 		virtual int GetReportCount() { return 4; }
 		
 		virtual void Tick(FTickArgs& output, float deltaSecs) override;
-		virtual void ReadData(FTickArgs& output, float deltaSecs) = 0;
+		
+		// TODO: make TInherit support abstract classes
+		virtual void ReadData(FTickArgs& output, float deltaSecs) {};
 
 		TArray<uint8> OutputBuffer;
-		virtual Hid::FScopedHidDevice const& GetDevice() = 0;
+		
+		// TODO: make TInherit support abstract classes
+		virtual Hid::FScopedHidDevice const& GetDevice();
 
 		template <CScalar... Axes>
 		bool CheckAxes(Axes... axes)

@@ -23,7 +23,7 @@ namespace SpaceMouse::Reader
 
 	namespace Hid
 	{
-		class FHidDeviceInfo;
+		struct FHidDeviceInfo;
 		class FHidDeviceId;
 	}
 
