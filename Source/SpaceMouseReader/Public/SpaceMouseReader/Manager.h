@@ -18,6 +18,8 @@
 #include "SpaceMouseReader/MovementState.h"
 #include "SpaceMouseReader/UserSettings.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogSpaceMouseManager, Log, Log)
+
 namespace SpaceMouse::Reader
 {
 	using namespace Mcro::Common;

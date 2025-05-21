@@ -2,7 +2,9 @@
 
 
 #include "SpaceMouseReader/Manager.h"
+#include "Logging/StructuredLog.h"
 
+DEFINE_LOG_CATEGORY(LogSpaceMouseManager);
 
 namespace SpaceMouse::Reader
 {
@@ -10,6 +12,7 @@ namespace SpaceMouse::Reader
 	{
 		IDeviceSource::OnRegistered().Add(InferDelegate::From(LifespanGuard, [this](IDeviceSource* devSource)
 		{
+			UE_LOGFMT(LogSpaceMouseManager, Display, "Registering with manager");
 			DeviceSourceCache = IDeviceSource::GetAll();
 			LastError.SyncPull(devSource->LastError);
 		}));

@@ -10,6 +10,7 @@
  */
 
 #include "SpaceMouseReader/DeviceModel.h"
+#include "SpaceMouseReader/DeviceFamily.h"
 
 namespace SpaceMouse::Reader
 {
@@ -19,4 +20,21 @@ namespace SpaceMouse::Reader
 		: Id(Forward<FDeviceId>(deviceId))
 		, Confidence(confidence)
 	{}
+
+	void RegisterDeviceModels(TArray<FDeviceModel> const& models)
+	{
+		GAllKnownDeviceModels.Append(models);
+	}
+
+	TArray<FDeviceModel> const& GetAllKnownDeviceModels()
+	{
+		if (GAllKnownDeviceModels.IsEmpty())
+		{
+			for (auto familyFactory : IDeviceFamily::IFactory::GetAll())
+			{
+				familyFactory->GetKnownDeviceModels();
+			}
+		}
+		return GAllKnownDeviceModels;
+	}
 }

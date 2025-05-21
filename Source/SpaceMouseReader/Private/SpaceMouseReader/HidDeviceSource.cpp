@@ -73,7 +73,7 @@ namespace SpaceMouse::Reader
 	ranges::any_view<const FDeviceModel*> FHidDeviceSource::GetKnownHidDevices()
 	{
 		namespace rv = ranges::views;
-		return GAllKnownDeviceModels
+		return GetAllKnownDeviceModels()
 			| rv::transform([](FDeviceModel const& model)
 			{
 				return &model;

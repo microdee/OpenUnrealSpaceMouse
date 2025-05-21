@@ -71,38 +71,38 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		Map3DConnexionModern(target.ButtonQueue);
 	}
+	
+	TArray GSpaceMouseEnterpriseModels {
+		FDeviceModel(
+			FDeviceId()
+				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Enterprise"))
+				.With(new Hid::FHidDeviceId(0x256f, 0xc633))
+		)
+		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
+		{
+			device.With(new FSpaceMouseEnterpriseHidFamily())
+				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
+		})),
+			
+		// TODO: figure out a way to detect device through universal receiver
+		FDeviceModel(
+			FDeviceId()
+				.With(new FDeviceModelName(TEXTVIEW_"Universal Receiver"))
+				.With(new Hid::FHidDeviceId(0x256f, 0xc652)),
+			EModelConfidence::UntestedShouldWork
+		)
+		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
+		{
+			device.With(new FSpaceMouseEnterpriseHidFamily())
+				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
+		}))
+	};
+	FOnce GSpaceMouseEnterpriseRegisterWithAllDevices;
 
 	TArray<FDeviceModel> const& FSpaceMouseEnterpriseHidFamily::FFactory::GetKnownDeviceModels()
 	{
-		static TArray models {
-			FDeviceModel(
-				FDeviceId()
-					.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Enterprise"))
-					.With(new Hid::FHidDeviceId(0x256f, 0xc633))
-			)
-			.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-			{
-				device.With(new FSpaceMouseEnterpriseHidFamily())
-					.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
-			})),
-			
-			// TODO: figure out a way to detect device through universal receiver
-			FDeviceModel(
-				FDeviceId()
-					.With(new FDeviceModelName(TEXTVIEW_"Universal Receiver"))
-					.With(new Hid::FHidDeviceId(0x256f, 0xc652)),
-				EModelConfidence::UntestedShouldWork
-			)
-			.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-			{
-				device.With(new FSpaceMouseEnterpriseHidFamily())
-					.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
-			}))
-		};
-		
-		static FOnce registerWithAllDevices;
-		if (registerWithAllDevices) GAllKnownDeviceModels.Append(models);
-		return models;
+		if (GSpaceMouseEnterpriseRegisterWithAllDevices) RegisterDeviceModels(GSpaceMouseEnterpriseModels);
+		return GSpaceMouseEnterpriseModels;
 	}
 	
 	FSpaceMouseEnterpriseHidFamily::FFactory GSpaceMouseEnterpriseFamily {};

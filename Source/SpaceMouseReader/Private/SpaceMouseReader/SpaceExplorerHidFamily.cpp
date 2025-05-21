@@ -46,26 +46,26 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		MapButtonsFromArray(target.ButtonQueue, SupportedButtons);
 	}
+	
+	TArray GSpaceExplorerModels {
+		FDeviceModel(
+			FDeviceId()
+				.With(new FDeviceModelName(TEXTVIEW_"Space Explorer"))
+				.With(new Hid::FHidDeviceId(0x046d, 0xc627)),
+			EModelConfidence::UntestedShouldWork
+		)
+		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
+		{
+			device.With(new FSpaceExplorerHidFamily())
+				.With(new FSeparateReportTransRotHidReader(info));
+		}))
+	};
+	FOnce GSpaceExplorerRegisterWithAllDevices;
 
 	TArray<FDeviceModel> const& FSpaceExplorerHidFamily::FFactory::GetKnownDeviceModels()
 	{
-		static TArray models {
-			FDeviceModel(
-				FDeviceId()
-					.With(new FDeviceModelName(TEXTVIEW_"Space Explorer"))
-					.With(new Hid::FHidDeviceId(0x046d, 0xc627)),
-				EModelConfidence::UntestedShouldWork
-			)
-			.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-			{
-				device.With(new FSpaceExplorerHidFamily())
-					.With(new FSeparateReportTransRotHidReader(info));
-			}))
-		};
-		
-		static FOnce registerWithAllDevices;
-		if (registerWithAllDevices) GAllKnownDeviceModels.Append(models);
-		return models;
+		if (GSpaceExplorerRegisterWithAllDevices) RegisterDeviceModels(GSpaceExplorerModels);
+		return GSpaceExplorerModels;
 	}
 	
 	FSpaceExplorerHidFamily::FFactory GSpaceExplorerFamily {};

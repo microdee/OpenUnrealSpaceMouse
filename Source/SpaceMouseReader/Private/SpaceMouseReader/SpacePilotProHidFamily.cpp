@@ -76,26 +76,26 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		Map3DConnexionModern(target.ButtonQueue);
 	}
+	
+	TArray GSpacePilotProModels {
+		FDeviceModel(
+			FDeviceId()
+				.With(new FDeviceModelName(TEXTVIEW_"Space Pilot Pro"))
+				.With(new Hid::FHidDeviceId(0x046d, 0xc629)),
+			EModelConfidence::TestedViaFeedback
+		)
+		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
+		{
+			device.With(new FSpacePilotProHidFamily())
+				.With(new FSeparateReportTransRotHidReader(info));
+		}))
+	};
+	FOnce GSpacePilotProRegisterWithAllDevices;
 
 	TArray<FDeviceModel> const& FSpacePilotProHidFamily::FFactory::GetKnownDeviceModels()
 	{
-		static TArray models {
-			FDeviceModel(
-				FDeviceId()
-					.With(new FDeviceModelName(TEXTVIEW_"Space Pilot Pro"))
-					.With(new Hid::FHidDeviceId(0x046d, 0xc629)),
-				EModelConfidence::TestedViaFeedback
-			)
-			.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-			{
-				device.With(new FSpacePilotProHidFamily())
-					.With(new FSeparateReportTransRotHidReader(info));
-			}))
-		};
-		
-		static FOnce registerWithAllDevices;
-		if (registerWithAllDevices) GAllKnownDeviceModels.Append(models);
-		return models;
+		if (GSpacePilotProRegisterWithAllDevices) RegisterDeviceModels(GSpacePilotProModels);
+		return GSpacePilotProModels;
 	}
 	
 	FSpacePilotProHidFamily::FFactory GSpacePilotProFamily {};

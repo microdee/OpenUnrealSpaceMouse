@@ -10,6 +10,7 @@
  */
 
 #include "SpaceMouseReader/HidapiLayer.h"
+#include "Logging/StructuredLog.h"
 #include "SpaceMouseReader.h"
 
 DECLARE_LOG_CATEGORY_CLASS(LogSpaceMouseHid, Log, Log);
@@ -19,6 +20,7 @@ namespace SpaceMouse::Reader::Hid
 	TObserveModule<FSpaceMouseReaderModule> GObserveModule {{
 		.OnStartup = []
 		{
+			UE_LOG(LogSpaceMouseHid, Display, TEXT_"Initializing hidapi");
 			int32 result = hid_init();
 			ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
 				->WithMessage(TEXT_"Couldn't initialize hidapi library.")
@@ -28,6 +30,7 @@ namespace SpaceMouse::Reader::Hid
 		},
 		.OnShutdown = []
 		{
+			UE_LOG(LogSpaceMouseHid, Display, TEXT_"Shutting hidapi down");
 			int32 result = hid_exit();
 			ERROR_CLOG(result < 0, LogSpaceMouseHid, Error, IError::Make(new FHidError())
 				->WithMessage(TEXT_"hidapi library didn't shut down correctly.")
@@ -41,7 +44,6 @@ namespace SpaceMouse::Reader::Hid
 
 	FString FHidDeviceId::ToString() const
 	{
-		UE_LOG(LogSpaceMouseHid, Display, TEXT_"");
 		return TEXT_"vid: {0}, pid: {1}" _FMT(VidPid.Vid, VidPid.Pid);
 	}
 
@@ -177,6 +179,7 @@ namespace SpaceMouse::Reader::Hid
 		: DeviceInfo(deviceInfo)
 	{
 		DeviceOpenResult = Success();
+		UE_LOGFMT(LogSpaceMouseHid, Log, "Opening device:\n{DevInfo}", deviceInfo.ToString());
 		Device = hid_open_path(deviceInfo.Path.c_str());
 		if (UNLIKELY(!Device))
 		{
@@ -206,6 +209,7 @@ namespace SpaceMouse::Reader::Hid
 
 	FScopedHidDevice::~FScopedHidDevice()
 	{
+		UE_LOGFMT(LogSpaceMouseHid, Log, "Closing device:\n{DevInfo}", UnrealConvert(DeviceInfo.Path));
 		if (Device) hid_close(Device);
 	}
 

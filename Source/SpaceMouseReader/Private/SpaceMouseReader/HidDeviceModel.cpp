@@ -20,11 +20,11 @@ namespace SpaceMouse::Reader
 		: Setup(Forward<SetupFunc>(setup))
 	{}
 
-	void FCreateHidDevice::OnComponentRegistered(FDeviceModel& model)
+	void FCreateHidDevice::OnComponentRegistered(FDeviceModel const& model)
 	{
 		using namespace SpaceMouse::Reader::Hid;
 		
-		Id = model.Get<FDeviceId>();
+		Id = model.Id;
 		HidId = Id.TryGet<FHidDeviceId>();
 	}
 

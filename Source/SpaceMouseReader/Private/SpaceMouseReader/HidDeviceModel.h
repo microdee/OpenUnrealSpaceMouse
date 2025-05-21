@@ -33,7 +33,7 @@ namespace SpaceMouse::Reader
 		
 		FCreateHidDevice(SetupFunc&& setup);
 
-		void OnComponentRegistered(FDeviceModel& model);
+		void OnComponentRegistered(const FDeviceModel& model);
 
 		bool MatchesWith(Hid::FHidDeviceInfo const& info) const;
 		TMaybe<FDevice> CreateHidDevice(Hid::FHidDeviceInfo const& info) const;
