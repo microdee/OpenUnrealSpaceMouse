@@ -42,7 +42,9 @@ public class SpaceMouseEditor : ModuleRules
                 "DetailCustomizations",
                 "LevelEditor",
                 "ApplicationCore",
-                "RHI"
+                "RHI",
+                
+                "Mcro",
             });
         }
     }

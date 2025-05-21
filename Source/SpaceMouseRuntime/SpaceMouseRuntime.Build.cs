@@ -28,6 +28,7 @@ public class SpaceMouseRuntime : ModuleRules
             "Core",
             "CoreUObject",
             "InputDevice",
+            "Mcro",
 
             "SpaceMouseReader",
         });

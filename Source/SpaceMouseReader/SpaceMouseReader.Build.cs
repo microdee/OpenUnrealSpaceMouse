@@ -27,6 +27,9 @@ public class SpaceMouseReader : ModuleRules
         {
             "Core",
             "CoreUObject",
+            "Slate",
+            "SlateCore",
+            "YamlCpp",
             
             "Mcro",
         });

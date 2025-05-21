@@ -90,12 +90,12 @@ namespace SpaceMouse::Reader::Hid
 		template <typename Self>
 		SelfRef<Self> WithDeviceInfo(this Self&& self, FHidDeviceInfo const& deviceInfo)
 		{
-			DeviceInfo.Emplace(deviceInfo);
+			self.DeviceInfo = deviceInfo;
 			return self.SharedThis(&self);
 		}
 	};
 
-	FCanFail SPACEMOUSEREADER_API EnumerateDevices(TFunction<void(int32, FHidDeviceInfo const&)> const& function);
+	SPACEMOUSEREADER_API FCanFail EnumerateDevices(TFunction<void(int32, FHidDeviceInfo const&)> const& function);
 	
 	class SPACEMOUSEREADER_API FScopedHidDevice
 	{

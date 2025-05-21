@@ -78,19 +78,19 @@ namespace SpaceMouse::Reader::Hid
 	auto operator << (YAML::Emitter& emitter, FHidDeviceInfo const& v) -> YAML::Emitter&
 	{
 		FMap map(emitter);
-		GENERATE_YAML_MAP(emitter, v.,
-			Path,
-			VendorId,
-			ProductId,
-			SerialNumber,
-			ReleaseNumber,
-			ManufacturerString,
-			ProductString,
-			UsagePage,
-			Usage,
-			InterfaceNumber,
-			BusType
-		);
+
+		emitter << YAML::Key << "Path"               << YAML::Value << v.Path;
+		emitter << YAML::Key << "VendorId"           << YAML::Value << v.VendorId;
+		emitter << YAML::Key << "ProductId"          << YAML::Value << v.ProductId;
+		emitter << YAML::Key << "SerialNumber"       << YAML::Value << StdConvert<ANSICHAR>(v.SerialNumber);
+		emitter << YAML::Key << "ReleaseNumber"      << YAML::Value << v.ReleaseNumber;
+		emitter << YAML::Key << "ManufacturerString" << YAML::Value << StdConvert<ANSICHAR>(v.ManufacturerString);
+		emitter << YAML::Key << "ProductString"      << YAML::Value << StdConvert<ANSICHAR>(v.ProductString);
+		emitter << YAML::Key << "UsagePage"          << YAML::Value << v.UsagePage;
+		emitter << YAML::Key << "Usage"              << YAML::Value << v.Usage;
+		emitter << YAML::Key << "InterfaceNumber"    << YAML::Value << v.InterfaceNumber;
+		emitter << YAML::Key << "BusType"            << YAML::Value << v.BusType;
+		
 		return emitter;
 	}
 
@@ -130,7 +130,7 @@ namespace SpaceMouse::Reader::Hid
 	TSharedRef<SErrorDisplay> FHidError::CreateErrorWidget()
 	{
 		FString deviceInfo = DeviceInfo.IsSet()
-			? DeviceInfo.GetValue()
+			? DeviceInfo.GetValue().ToString()
 			: FString();
 		
 		return SNew(SErrorDisplay)
@@ -142,7 +142,7 @@ namespace SpaceMouse::Reader::Hid
 		;
 	}
 
-	FCanFail EnumerateDevices(TFunction<FCanFail(int32, FHidDeviceInfo const&)> const& function)
+	FCanFail EnumerateDevices(TFunction<void(int32, FHidDeviceInfo const&)> const& function)
 	{
 		auto devInfo = hid_enumerate(0, 0);
 		auto firstDevInfo = devInfo;
@@ -159,7 +159,7 @@ namespace SpaceMouse::Reader::Hid
 		int order = 0;
 		while (devInfo)
 		{
-			PROPAGATE_FAIL(function(order, *devInfo));
+			function(order, *devInfo);
 			devInfo = devInfo->next;
 			order++;
 		}
