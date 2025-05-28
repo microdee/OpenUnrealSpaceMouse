@@ -25,18 +25,16 @@ namespace SpaceMouse::Reader
 	class SPACEMOUSEREADER_API IHidDeviceReader : public TInherit<IDeviceReader>
 	{
 	protected:
-		virtual int GetReportSize() { return 7; }
-		virtual int GetReportCount() { return 4; }
+		virtual int GetReportSize() = 0;
+		virtual int GetReportCount() = 0;
 		
 		virtual void Tick(FTickArgs& output, float deltaSecs) override;
 		
-		// TODO: make TInherit support abstract classes
-		virtual void ReadData(FTickArgs& output, float deltaSecs) {};
+		virtual void ReadData(FTickArgs& output, float deltaSecs) = 0;
 
 		TArray<uint8> OutputBuffer;
 		
-		// TODO: make TInherit support abstract classes
-		virtual Hid::FScopedHidDevice const& GetDevice();
+		virtual Hid::FScopedHidDevice const& GetDevice() = 0;
 
 		template <CScalar... Axes>
 		bool CheckAxes(Axes... axes)

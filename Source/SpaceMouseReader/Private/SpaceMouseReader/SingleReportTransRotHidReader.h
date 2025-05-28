@@ -38,6 +38,7 @@ namespace SpaceMouse::Reader
 	public:
 		FSingleReportTransRotHidReader(Hid::FHidDeviceInfo const& devInfo, EButtonReportSource buttonSource);
 		virtual int GetReportSize() override { return 13; }
+		virtual int GetReportCount() override { return 4; }
 		virtual void ReadData(FTickArgs& output, float deltaSecs) override;
 		virtual Hid::FScopedHidDevice const& GetDevice() override;
 		

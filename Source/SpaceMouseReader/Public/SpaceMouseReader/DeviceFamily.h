@@ -31,11 +31,9 @@ namespace SpaceMouse::Reader
 		class IFactory : public TAutoModularFeature<IFactory>
 		{
 		public:
-			// TODO: make TInherit support abstract classes
-			virtual TArray<FDeviceModel> const& GetKnownDeviceModels();
+			virtual TArray<FDeviceModel> const& GetKnownDeviceModels() = 0;
 		};
 		
-		// TODO: make TInherit support abstract classes
-		virtual IFactory& GetFactory();
+		virtual IFactory& GetFactory() = 0;
 	};
 }

@@ -21,6 +21,8 @@ public class SpaceMouseReader : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
+        
+        // Library code compatibility
         UndefinedIdentifierWarningLevel = WarningLevel.Off;
         
         PublicDependencyModuleNames.AddRange(new []

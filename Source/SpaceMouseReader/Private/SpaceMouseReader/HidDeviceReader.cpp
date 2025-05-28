@@ -56,12 +56,4 @@ namespace SpaceMouse::Reader
 
 		TickMovementState(output, deltaSecs);
 	}
-
-	Hid::FScopedHidDevice const& IHidDeviceReader::GetDevice()
-	{
-		// TODO: make TInherit support abstract classes
-		static Hid::FScopedHidDevice dummy {};
-		FORCE_CRASH();
-		return dummy;
-	}
 }

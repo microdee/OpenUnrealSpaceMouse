@@ -13,19 +13,4 @@
 
 namespace SpaceMouse::Reader
 {
-	TArray<FDeviceModel> const& IDeviceFamily::IFactory::GetKnownDeviceModels()
-	{
-		// TODO: make TInherit support abstract classes
-		static TArray<FDeviceModel> dummy;
-		FORCE_CRASH();
-		return dummy;
-	}
-
-	IDeviceFamily::IFactory& IDeviceFamily::GetFactory()
-	{
-		// TODO: make TInherit support abstract classes
-		static IFactory dummy;
-		FORCE_CRASH();
-		return dummy;
-	}
 }
