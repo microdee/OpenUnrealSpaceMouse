@@ -17,8 +17,22 @@ namespace SpaceMouse::Reader
 	TArray<FDeviceModel> GAllKnownDeviceModels {};
 
 	FDeviceModel::FDeviceModel(FDeviceId&& deviceId, EModelConfidence confidence)
-		: Id(Forward<FDeviceId>(deviceId))
+		: IComposable()
+		, Id(Forward<FDeviceId>(deviceId))
 		, Confidence(confidence)
+	{}
+
+	FDeviceModel::FDeviceModel(const FDeviceModel& Other)
+		: IComposable(Other)
+		, Id(Other.Id)
+		, Confidence(Other.Confidence)
+	{
+	}
+
+	FDeviceModel::FDeviceModel(FDeviceModel&& Other) noexcept
+		: IComposable(Forward<FDeviceModel>(Other))
+		, Id(MoveTemp(Other.Id))
+		, Confidence(Other.Confidence)
 	{}
 
 	void RegisterDeviceModels(TArray<FDeviceModel> const& models)

@@ -20,28 +20,12 @@ namespace SpaceMouse::Reader
 		: Setup(Forward<SetupFunc>(setup))
 	{}
 
-	void FCreateHidDevice::OnComponentRegistered(FDeviceModel const& model)
+	// TODO: fix IComposable so it can provide safe parent reference mechanism without smart pointers
+	TMaybe<FDevice> FCreateHidDevice::CreateHidDevice(Hid::FHidDeviceInfo const& info, FDeviceModel const& parent) const
 	{
-		using namespace SpaceMouse::Reader::Hid;
-		
-		Id = model.Id;
-		HidId = Id.TryGet<FHidDeviceId>();
-		ASSERT_CRASH(HidId);
-	}
-
-	bool FCreateHidDevice::MatchesWith(Hid::FHidDeviceInfo const& info) const
-	{
-		ASSERT_CRASH(HidId);
-		return HidId->VidPid.Vid == info.VendorId && HidId->VidPid.Pid == info.ProductId; 
-	}
-
-	TMaybe<FDevice> FCreateHidDevice::CreateHidDevice(Hid::FHidDeviceInfo const& info) const
-	{
-		// It is morally wrong to call this function before either of these are valid, so that's why we're crashing
-		// here otherwise.
-		ASSERT_CRASH(HidId && Setup);
+		ASSERT_CRASH(Setup);
 		FDevice output;
-		output.WithAnsi(Ansi::New<FDeviceId>(Id)).With([&info](FDeviceId& id)
+		output.WithAnsi(Ansi::New<FDeviceId>(parent.Id)).With([&info](FDeviceId& id)
 		{
 			id.WithAnsi(Ansi::New<Hid::FHidDevicePath>(info.Path));
 		});

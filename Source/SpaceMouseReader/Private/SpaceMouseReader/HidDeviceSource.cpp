@@ -81,8 +81,7 @@ namespace SpaceMouse::Reader
 			| rv::filter([](const FDeviceModel* model) -> bool
 			{
 				return model->TryGet<FCreateHidDevice>() && model->Id.TryGet<Hid::FHidDeviceId>();
-			})
-			| rv::cache1;
+			});
 	}
 
 	void FHidDeviceSource::ConnectAvailableDevices()
@@ -90,7 +89,8 @@ namespace SpaceMouse::Reader
 		Devices.Reset(ConnectedDevices.Num());
 		for (FModel const& model : ConnectedDevices)
 		{
-			if (auto result = model.Model->Get<FCreateHidDevice>().CreateHidDevice(model.Info))
+			auto&& deviceCreator = model.Model->Get<FCreateHidDevice>();
+			if (auto result = deviceCreator.CreateHidDevice(model.Info, *model.Model))
 			{
 				LastError.SyncPull(result.GetValue().LastError);
 				Devices.Emplace(MoveTemp(result).StealValue());

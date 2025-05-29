@@ -27,20 +27,14 @@ namespace SpaceMouse::Reader
 		class FHidDeviceId;
 	}
 
-	struct SPACEMOUSEREADER_API FCreateHidDevice : IStrictComponent
+	struct SPACEMOUSEREADER_API FCreateHidDevice
 	{
 		using SetupFunc = TFunction<void(FDevice&, Hid::FHidDeviceInfo const&)>;
 		
 		FCreateHidDevice(SetupFunc&& setup);
 
-		void OnComponentRegistered(const FDeviceModel& model);
-
-		bool MatchesWith(Hid::FHidDeviceInfo const& info) const;
-		TMaybe<FDevice> CreateHidDevice(Hid::FHidDeviceInfo const& info) const;
-
-		FDeviceId Id;
+		// TODO: fix IComposable so it can provide safe parent reference mechanism without smart pointers
+		TMaybe<FDevice> CreateHidDevice(Hid::FHidDeviceInfo const& info, FDeviceModel const& parent) const;
 		SetupFunc Setup;
-
-		Hid::FHidDeviceId* HidId = nullptr;
 	};
 }

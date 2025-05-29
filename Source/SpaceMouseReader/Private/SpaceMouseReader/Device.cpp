@@ -55,6 +55,8 @@ namespace SpaceMouse::Reader
 			);
 			return;
 		}
+		ProcessedData.ButtonQueue.All = 0;
+		NormData.ButtonQueue.All = 0;
 		Reader->Tick({ProcessedData, NormData, MovementState, UserSettings}, deltaSecs);
 		Family->ProcessRawButtons(NormData);
 		Family->ProcessRawButtons(ProcessedData);

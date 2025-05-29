@@ -37,6 +37,10 @@ namespace SpaceMouse::Reader
 		return GetTypeHash(Name);
 	}
 
+	FDeviceId::FDeviceId() : IComposable() {}
+	FDeviceId::FDeviceId(FDeviceId const& other) : IComposable(other) {}
+	FDeviceId::FDeviceId(FDeviceId&& other) : IComposable(Forward<FDeviceId>(other)) {}
+
 	FString FDeviceId::ToString() const
 	{
 		namespace rv = ranges::views; 

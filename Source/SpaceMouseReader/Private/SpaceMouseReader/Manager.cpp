@@ -34,18 +34,22 @@ namespace SpaceMouse::Reader
 			}
 		}
 
-		for (auto& pair : Buttons)
-			pair.Value.NormalizePrevious();
+		for (auto& [cmd, state] : Buttons)
+			state.NormalizePrevious();
 
 		for (uint16 button : AccumulatedData.ButtonQueue)
 		{
+			auto cmd = Buttons::AsCmd(button - 1);
+			if (cmd == Buttons::ECmd::Noop) continue;
 			if (!PreviousAccumulatedData.ButtonQueue.ArrayView().Contains(button))
-				Buttons[Buttons::AsCmd(button - 1)] = true;
+				Buttons.FindOrAdd(cmd) = true;
 		}
 		for (uint16 button : PreviousAccumulatedData.ButtonQueue)
 		{
+			auto cmd = Buttons::AsCmd(button - 1);
+			if (cmd == Buttons::ECmd::Noop) continue;
 			if (!AccumulatedData.ButtonQueue.ArrayView().Contains(button))
-				Buttons[Buttons::AsCmd(button - 1)] = false;
+				Buttons.FindOrAdd(cmd) = false;
 		}
 	}
 

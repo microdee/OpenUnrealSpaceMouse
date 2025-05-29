@@ -27,6 +27,7 @@ namespace SpaceMouse::Reader::Buttons
 		{
 			if (i > 3) break;
 			Array[i] = button;
+			++i;
 		}
 		return *this;
 	}
@@ -268,7 +269,7 @@ namespace SpaceMouse::Reader::Buttons
 		for (int i = 0; i < 4; ++i)
 		{
 			if (target.Array[i] > 0)
-				target.Array[i] = AsUint16(array[target.Array[i]]) + 1;
+				target.Array[i] = AsUint16(array[target.Array[i] - 1]) + 1;
 		}
 	}
 

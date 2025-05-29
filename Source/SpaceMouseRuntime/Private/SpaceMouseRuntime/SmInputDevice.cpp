@@ -165,12 +165,12 @@ namespace SpaceMouse::Runtime
 			);
 		}
 
-		for (auto const& pair : manager.Buttons)
+		for (auto const& [cmd, state] : manager.Buttons)
 		{
-			if (pair.Value.OnDown())
-				MessageHandler->OnControllerButtonPressed(GetKeyFrom(pair.Key).GetFName(), platformUser, inputDevice, false);
-			if (pair.Value.OnUp())
-				MessageHandler->OnControllerButtonReleased(GetKeyFrom(pair.Key).GetFName(), platformUser, inputDevice, false);
+			if (state.OnDown())
+				MessageHandler->OnControllerButtonPressed(GetKeyFrom(cmd).GetFName(), platformUser, inputDevice, false);
+			if (state.OnUp())
+				MessageHandler->OnControllerButtonReleased(GetKeyFrom(cmd).GetFName(), platformUser, inputDevice, false);
 		}
 	}
 

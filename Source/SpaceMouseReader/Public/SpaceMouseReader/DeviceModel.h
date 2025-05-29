@@ -30,10 +30,13 @@ namespace SpaceMouse::Reader
 
 	struct SPACEMOUSEREADER_API FDeviceModel : IComposable
 	{
+		FDeviceModel() = default;
 		FDeviceModel(FDeviceId&& deviceId, EModelConfidence confidence = EModelConfidence::Tested);
+		FDeviceModel(const FDeviceModel& Other);
+		FDeviceModel(FDeviceModel&& Other) noexcept;
 
 		FDeviceId Id;
-		EModelConfidence Confidence;
+		EModelConfidence Confidence = EModelConfidence::Tested;
 	};
 	
 	SPACEMOUSEREADER_API TArray<FDeviceModel> const& GetAllKnownDeviceModels();

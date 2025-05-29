@@ -40,7 +40,7 @@ namespace SpaceMouse::Reader
 		bool CheckAxes(Axes... axes)
 		{
 			return ((axes <= GetAxisResolution()) && ...)
-				&& ((-axes >= GetAxisResolution()) && ...);
+				&& ((-axes <= GetAxisResolution()) && ...);
 		}
 	};
 }

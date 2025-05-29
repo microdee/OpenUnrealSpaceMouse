@@ -44,6 +44,10 @@ namespace SpaceMouse::Reader
 	class SPACEMOUSEREADER_API FDeviceId : public IComposable
 	{
 	public:
+		FDeviceId();
+		FDeviceId(FDeviceId const& other);
+		FDeviceId(FDeviceId&& other);
+		
 		FString ToString() const;
 		friend uint32 GetTypeHash(FDeviceId const& self);
 	};
