@@ -32,7 +32,7 @@ namespace SpaceMouse::Reader
 		{
 			for (auto familyFactory : IDeviceFamily::IFactory::GetAll())
 			{
-				familyFactory->GetKnownDeviceModels();
+				familyFactory->SubmitKnownDeviceModels(GAllKnownDeviceModels);
 			}
 		}
 		return GAllKnownDeviceModels;

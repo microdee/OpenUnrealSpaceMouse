@@ -11,14 +11,18 @@
 
 #include "SpaceMouseReader/SpaceNavigatorHidFamily.h"
 
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/Device.h"
 #include "SpaceMouseReader/HidapiLayer.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
+#include "SpaceMouseReader/HidDeviceFamilyCommon.h"
 #include "SpaceMouseReader/SeparateReportTransRotHidReader.h"
 #include "SpaceMouseReader/SingleReportTransRotHidReader.h"
 
 namespace SpaceMouse::Reader
 {
+	TModuleBoundObject<FSpaceMouseReaderModule, FSpaceNavigatorHidFamily::FFactory> GSpaceNavigatorHidFamily;
+	
 	FSpaceNavigatorHidFamily::FSpaceNavigatorHidFamily()
 	{
 		using namespace SpaceMouse::Reader::Buttons;
@@ -29,88 +33,41 @@ namespace SpaceMouse::Reader
 		};
 	}
 
-	TArray GSpaceNavigatorModels {
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Compact"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc635))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		})),
-		
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Wireless (USB cable)"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc62e))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonBits_Report3));
-		})),
-		
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Wireless (Receiver)"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc62f))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonBits_Report3));
-		})),
-		
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Navigator"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc626))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		})),
-		
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Navigator for Notebooks"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc628)),
-			EModelConfidence::UntestedShouldWork
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		})),
-		
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Traveler"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc623)),
-			EModelConfidence::UntestedShouldWork
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceNavigatorHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		})),
-	};
-	FOnce GSpaceNavigatorRegisterWithAllDevices;
-
-	TArray<FDeviceModel> const& FSpaceNavigatorHidFamily::FFactory::GetKnownDeviceModels()
+	void FSpaceNavigatorHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
 	{
-		if (GSpaceNavigatorRegisterWithAllDevices) RegisterDeviceModels(GSpaceNavigatorModels);
-		return GSpaceNavigatorModels;
+		models.Append({
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Compact", 0x256f, 0xc635,
+				EModelConfidence::Tested
+			),
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSingleReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Wireless (USB cable)", 0x256f, 0xc62e,
+				EModelConfidence::TestedViaFeedback,
+				EButtonReportSource::ButtonBits_Report3
+			),
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSingleReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Wireless (Receiver)", 0x256f, 0xc62e,
+				EModelConfidence::TestedViaFeedback,
+				EButtonReportSource::ButtonBits_Report3
+			),
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Navigator", 0x046d, 0xc626,
+				EModelConfidence::Tested
+			),
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Navigator for Notebooks", 0x046d, 0xc628,
+				EModelConfidence::UntestedShouldWork
+			),
+			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Traveler", 0x046d, 0xc623,
+				EModelConfidence::UntestedShouldWork
+			),
+		});
 	}
-	
-	FSpaceNavigatorHidFamily::FFactory GSpaceNavigatorFamily {};
 
 	IDeviceFamily::IFactory& FSpaceNavigatorHidFamily::GetFactory()
 	{
-		return GSpaceNavigatorFamily;
+		return GSpaceNavigatorHidFamily.GetChecked();
 	}
 
 }

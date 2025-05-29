@@ -11,13 +11,17 @@
 
 #include "SpaceMouseReader/SpaceMouseEnterpriseHidFamily.h"
 
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/Device.h"
 #include "SpaceMouseReader/HidapiLayer.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
+#include "SpaceMouseReader/HidDeviceFamilyCommon.h"
 #include "SpaceMouseReader/SingleReportTransRotHidReader.h"
 
 namespace SpaceMouse::Reader
 {
+	TModuleBoundObject<FSpaceMouseReaderModule, FSpaceMouseEnterpriseHidFamily::FFactory> GSpaceMouseEnterpriseHidFamily;
+	
 	FSpaceMouseEnterpriseHidFamily::FSpaceMouseEnterpriseHidFamily()
 	{
 		using namespace SpaceMouse::Reader::Buttons;
@@ -71,45 +75,28 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		Map3DConnexionModern(target.ButtonQueue);
 	}
-	
-	TArray GSpaceMouseEnterpriseModels {
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Enterprise"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc633))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceMouseEnterpriseHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
-		})),
-			
-		// TODO: figure out a way to detect device through universal receiver
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Universal Receiver"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc652)),
-			EModelConfidence::UntestedShouldWork
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceMouseEnterpriseHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonQueue_Report28));
-		}))
-	};
-	FOnce GSpaceMouseEnterpriseRegisterWithAllDevices;
 
-	TArray<FDeviceModel> const& FSpaceMouseEnterpriseHidFamily::FFactory::GetKnownDeviceModels()
+	void FSpaceMouseEnterpriseHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
 	{
-		if (GSpaceMouseEnterpriseRegisterWithAllDevices) RegisterDeviceModels(GSpaceMouseEnterpriseModels);
-		return GSpaceMouseEnterpriseModels;
+		models.Append({
+			MakeHidDeviceModel<FSpaceMouseEnterpriseHidFamily, FSingleReportTransRotHidReader>(
+			TEXTVIEW_"Space Mouse Enterprise", 0x256f, 0xc633,
+				EModelConfidence::Tested,
+				EButtonReportSource::ButtonQueue_Report28
+			),
+			
+			// TODO: figure out a way to detect device through universal receiver
+			MakeHidDeviceModel<FSpaceMouseEnterpriseHidFamily, FSingleReportTransRotHidReader>(
+			TEXTVIEW_"Universal Receiver", 0x256f, 0xc652,
+				EModelConfidence::Tested,
+				EButtonReportSource::ButtonQueue_Report28
+			)
+		});
+		
 	}
-	
-	FSpaceMouseEnterpriseHidFamily::FFactory GSpaceMouseEnterpriseFamily {};
 
 	IDeviceFamily::IFactory& FSpaceMouseEnterpriseHidFamily::GetFactory()
 	{
-		return GSpaceMouseEnterpriseFamily;
+		return GSpaceMouseEnterpriseHidFamily.GetChecked();
 	}
-
 }

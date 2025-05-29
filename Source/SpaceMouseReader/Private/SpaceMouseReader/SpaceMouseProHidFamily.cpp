@@ -11,14 +11,18 @@
 
 #include "SpaceMouseReader/SpaceMouseProHidFamily.h"
 
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/Device.h"
 #include "SpaceMouseReader/HidapiLayer.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
+#include "SpaceMouseReader/HidDeviceFamilyCommon.h"
 #include "SpaceMouseReader/SeparateReportTransRotHidReader.h"
 #include "SpaceMouseReader/SingleReportTransRotHidReader.h"
 
 namespace SpaceMouse::Reader
 {
+	TModuleBoundObject<FSpaceMouseReaderModule, FSpaceMouseProHidFamily::FFactory> GSpaceMouseProHidFamily;
+	
 	FSpaceMouseProHidFamily::FSpaceMouseProHidFamily()
 	{
 		using namespace SpaceMouse::Reader::Buttons;
@@ -55,54 +59,30 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		Map3DConnexionModern(target.ButtonQueue);
 	}
-	
-	TArray GSpaceMouseProModels {
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Pro"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc62b))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceMouseProHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		})),
-			
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Pro Wireless (USB cable)"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc631))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceMouseProHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonBits_Report3));
-		})),
-			
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Mouse Pro Wireless (Receiver)"))
-				.With(new Hid::FHidDeviceId(0x256f, 0xc632))
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceMouseProHidFamily())
-				.With(new FSingleReportTransRotHidReader(info, EButtonReportSource::ButtonBits_Report3));
-		})),
-	};
-	FOnce GSpaceMouseProRegisterWithAllDevices;
 
-	TArray<FDeviceModel> const& FSpaceMouseProHidFamily::FFactory::GetKnownDeviceModels()
+	void FSpaceMouseProHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
 	{
-		if (GSpaceMouseProRegisterWithAllDevices) RegisterDeviceModels(GSpaceMouseProModels);
-		return GSpaceMouseProModels;
+		models.Append({
+			MakeHidDeviceModel<FSpaceMouseProHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Pro", 0x046d, 0xc62b,
+				EModelConfidence::Tested
+			),
+			MakeHidDeviceModel<FSpaceMouseProHidFamily, FSingleReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Pro Wireless (USB cable)", 0x256f, 0xc631,
+				EModelConfidence::UntestedShouldWork,
+				EButtonReportSource::ButtonBits_Report3
+			),
+			MakeHidDeviceModel<FSpaceMouseProHidFamily, FSingleReportTransRotHidReader>(
+				TEXTVIEW_"Space Mouse Pro Wireless (Receiver)", 0x256f, 0xc632,
+				EModelConfidence::UntestedShouldWork,
+				EButtonReportSource::ButtonBits_Report3
+			)
+		});
 	}
-	
-	FSpaceMouseProHidFamily::FFactory GSpaceMouseProFamily {};
 
 	IDeviceFamily::IFactory& FSpaceMouseProHidFamily::GetFactory()
 	{
-		return GSpaceMouseProFamily;
+		return GSpaceMouseProHidFamily.GetChecked();
 	}
 
 }

@@ -36,6 +36,5 @@ namespace SpaceMouse::Reader
 		EModelConfidence Confidence;
 	};
 	
-	SPACEMOUSEREADER_API void RegisterDeviceModels(TArray<FDeviceModel> const& models);
 	SPACEMOUSEREADER_API TArray<FDeviceModel> const& GetAllKnownDeviceModels();
 }

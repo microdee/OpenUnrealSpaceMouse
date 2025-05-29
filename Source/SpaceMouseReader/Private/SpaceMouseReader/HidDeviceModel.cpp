@@ -26,6 +26,7 @@ namespace SpaceMouse::Reader
 		
 		Id = model.Id;
 		HidId = Id.TryGet<FHidDeviceId>();
+		ASSERT_CRASH(HidId);
 	}
 
 	bool FCreateHidDevice::MatchesWith(Hid::FHidDeviceInfo const& info) const
@@ -40,9 +41,9 @@ namespace SpaceMouse::Reader
 		// here otherwise.
 		ASSERT_CRASH(HidId && Setup);
 		FDevice output;
-		output.With(new FDeviceId(Id)).With([&info](FDeviceId& id)
+		output.WithAnsi(Ansi::New<FDeviceId>(Id)).With([&info](FDeviceId& id)
 		{
-			id.With(new Hid::FHidDevicePath(info.Path));
+			id.WithAnsi(Ansi::New<Hid::FHidDevicePath>(info.Path));
 		});
 		Setup(output, info);
 		if (output.LastError->IsValid())

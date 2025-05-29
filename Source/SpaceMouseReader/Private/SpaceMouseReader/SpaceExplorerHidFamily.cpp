@@ -9,15 +9,20 @@
  *  @date 2025
  */
 
+#include "SpaceExplorerHidFamily.h"
 #include "SpaceMouseReader/SpaceExplorerHidFamily.h"
 
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/Device.h"
 #include "SpaceMouseReader/HidapiLayer.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
+#include "SpaceMouseReader/HidDeviceFamilyCommon.h"
 #include "SpaceMouseReader/SeparateReportTransRotHidReader.h"
 
 namespace SpaceMouse::Reader
 {
+	TModuleBoundObject<FSpaceMouseReaderModule, FSpaceExplorerHidFamily::FFactory> GSpaceExplorerHidFamily;
+	
 	FSpaceExplorerHidFamily::FSpaceExplorerHidFamily()
 	{
 		using namespace SpaceMouse::Reader::Buttons;
@@ -46,33 +51,19 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		MapButtonsFromArray(target.ButtonQueue, SupportedButtons);
 	}
-	
-	TArray GSpaceExplorerModels {
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Explorer"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc627)),
-			EModelConfidence::UntestedShouldWork
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpaceExplorerHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		}))
-	};
-	FOnce GSpaceExplorerRegisterWithAllDevices;
 
-	TArray<FDeviceModel> const& FSpaceExplorerHidFamily::FFactory::GetKnownDeviceModels()
+	void FSpaceExplorerHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
 	{
-		if (GSpaceExplorerRegisterWithAllDevices) RegisterDeviceModels(GSpaceExplorerModels);
-		return GSpaceExplorerModels;
+		models.Append({
+			MakeHidDeviceModel<FSpaceExplorerHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Explorer", 0x046d, 0xc627,
+				EModelConfidence::UntestedShouldWork
+			)
+		});
 	}
-	
-	FSpaceExplorerHidFamily::FFactory GSpaceExplorerFamily {};
 
 	IDeviceFamily::IFactory& FSpaceExplorerHidFamily::GetFactory()
 	{
-		return GSpaceExplorerFamily;
+		return GSpaceExplorerHidFamily.GetChecked();
 	}
-
 }

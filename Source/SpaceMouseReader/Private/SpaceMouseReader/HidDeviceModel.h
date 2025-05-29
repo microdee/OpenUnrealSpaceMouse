@@ -43,6 +43,4 @@ namespace SpaceMouse::Reader
 
 		Hid::FHidDeviceId* HidId = nullptr;
 	};
-
-	
 }

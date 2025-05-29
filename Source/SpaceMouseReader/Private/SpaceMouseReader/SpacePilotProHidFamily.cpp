@@ -11,13 +11,17 @@
 
 #include "SpaceMouseReader/SpacePilotProHidFamily.h"
 
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/Device.h"
 #include "SpaceMouseReader/HidapiLayer.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
+#include "SpaceMouseReader/HidDeviceFamilyCommon.h"
 #include "SpaceMouseReader/SeparateReportTransRotHidReader.h"
 
 namespace SpaceMouse::Reader
 {
+	TModuleBoundObject<FSpaceMouseReaderModule, FSpacePilotProHidFamily::FFactory> GSpacePilotProHidFamily;
+	
 	FSpacePilotProHidFamily::FSpacePilotProHidFamily()
 	{
 		using namespace SpaceMouse::Reader::Buttons;
@@ -76,33 +80,20 @@ namespace SpaceMouse::Reader
 		using namespace SpaceMouse::Reader::Buttons;
 		Map3DConnexionModern(target.ButtonQueue);
 	}
-	
-	TArray GSpacePilotProModels {
-		FDeviceModel(
-			FDeviceId()
-				.With(new FDeviceModelName(TEXTVIEW_"Space Pilot Pro"))
-				.With(new Hid::FHidDeviceId(0x046d, 0xc629)),
-			EModelConfidence::TestedViaFeedback
-		)
-		.With(new FCreateHidDevice([](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.With(new FSpacePilotProHidFamily())
-				.With(new FSeparateReportTransRotHidReader(info));
-		}))
-	};
-	FOnce GSpacePilotProRegisterWithAllDevices;
 
-	TArray<FDeviceModel> const& FSpacePilotProHidFamily::FFactory::GetKnownDeviceModels()
+	void FSpacePilotProHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
 	{
-		if (GSpacePilotProRegisterWithAllDevices) RegisterDeviceModels(GSpacePilotProModels);
-		return GSpacePilotProModels;
+		models.Append({
+			MakeHidDeviceModel<FSpacePilotProHidFamily, FSeparateReportTransRotHidReader>(
+				TEXTVIEW_"Space Pilot Pro", 0x046d, 0xc629,
+				EModelConfidence::TestedViaFeedback
+			)
+		});
 	}
 	
-	FSpacePilotProHidFamily::FFactory GSpacePilotProFamily {};
-
 	IDeviceFamily::IFactory& FSpacePilotProHidFamily::GetFactory()
 	{
-		return GSpacePilotProFamily;
+		return GSpacePilotProHidFamily.GetChecked();
 	}
 
 }
