@@ -52,7 +52,7 @@ namespace SpaceMouse::Reader
 		MapButtonsFromArray(target.ButtonQueue, SupportedButtons);
 	}
 
-	void FSpaceExplorerHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
+	void FSpaceExplorerHidFamily::FFactory::SubmitKnownDeviceModels(TArray<TSharedRef<FDeviceModel>>& models)
 	{
 		models.Append({
 			MakeHidDeviceModel<FSpaceExplorerHidFamily, FSeparateReportTransRotHidReader>(

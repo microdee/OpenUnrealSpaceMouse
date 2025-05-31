@@ -13,6 +13,7 @@
 
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SmViewportOverlay.h"
+#include "SpaceMouseEditor.h"
 #include "SpaceMouseRuntime/SmInputDevice.h"
 #include "SpaceMouseReader/MovementState.h"
 #include "CommonBehaviors.h"
@@ -30,7 +31,7 @@ namespace SpaceMouse::Editor
 {
 	using namespace SpaceMouse::Runtime;
 
-	FSmEditorManager GEditorManager {};
+	TModuleBoundObject<FSpaceMouseEditorModule, FSmEditorManager> GEditorManager {};
 	
 	void FSmEditorManager::Tick(float DeltaSecs)
 	{
@@ -194,7 +195,7 @@ namespace SpaceMouse::Editor
 
 	FSmEditorManager& FSmEditorManager::Get()
 	{
-		return GEditorManager;
+		return GEditorManager.GetChecked();
 	}
 
 	void FSmEditorManager::BeginLearning()

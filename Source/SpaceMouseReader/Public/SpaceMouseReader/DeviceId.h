@@ -18,9 +18,10 @@ namespace SpaceMouse::Reader
 {
 	using namespace Mcro::Common;
 
-	class SPACEMOUSEREADER_API IDeviceIdBase : public IHaveType
+	class SPACEMOUSEREADER_API IDeviceIdBase
 	{
 	public:
+		virtual ~IDeviceIdBase() = default;
 		virtual FString ToString() const = 0;
 		virtual uint32 GetHash() const = 0;
 
@@ -32,6 +33,7 @@ namespace SpaceMouse::Reader
 
 	class SPACEMOUSEREADER_API ISpecificDeviceId : public TInherit<IDeviceIdBase> {};
 	class SPACEMOUSEREADER_API IDeviceModelName : public TInherit<IDeviceIdBase> {};
+	
 	class SPACEMOUSEREADER_API FDeviceModelName : public TInherit<IDeviceModelName>
 	{
 	public:

@@ -31,7 +31,7 @@ namespace SpaceMouse::Reader
 		class IFactory : public TAutoModularFeature<IFactory>
 		{
 		public:
-			virtual void SubmitKnownDeviceModels(TArray<FDeviceModel>& models) = 0;
+			virtual void SubmitKnownDeviceModels(TArray<TSharedRef<FDeviceModel>>& models) = 0;
 		};
 		
 		virtual IFactory& GetFactory() = 0;

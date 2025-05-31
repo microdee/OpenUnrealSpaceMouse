@@ -25,7 +25,7 @@ namespace SpaceMouse::Reader
 	{
 	public:
 		FHidDeviceSource();
-		virtual TArray<FDevice> const& GetAvailableDevices() const override;
+		virtual TArray<TSharedRef<FDevice>> const& GetAvailableDevices() const override;
 		virtual void RefreshDevices() override;
 		
 		virtual void Tick(float deltaSecs) override;
@@ -33,14 +33,17 @@ namespace SpaceMouse::Reader
 	protected:
 		struct FModel
 		{
-			const FDeviceModel* Model;
+			TWeakPtr<FDeviceModel> Model;
 			Hid::FHidDeviceInfo Info;
 		};
 		TArray<FModel> ConnectedDevices;
 		TState<uint32> DeviceCombination {0};
 		float NextCheck = UE_MAX_FLT;
+		TQueue<int32> RemoveAt;
 		
-		static ranges::any_view<const FDeviceModel*> GetKnownHidDevices();
+		static ranges::any_view<TWeakPtr<FDeviceModel>> GetKnownHidDevices();
 		void ConnectAvailableDevices();
+		void FlagDeviceRemove(FString const& path);
+		void RemoveFlaggedDevices();
 	};
 }

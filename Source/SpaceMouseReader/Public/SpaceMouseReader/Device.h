@@ -30,7 +30,7 @@ namespace SpaceMouse::Reader
 	using FDeviceRef = TSharedRef<FDevice>;
 	using FDeviceWeakPtr = TWeakPtr<FDevice>;
 	
-	class SPACEMOUSEREADER_API FDevice : public IComposable
+	class SPACEMOUSEREADER_API FDevice : public IComposable, public TSharedFromThis<FDevice>
 	{
 	public:
 		FDevice();
@@ -44,6 +44,15 @@ namespace SpaceMouse::Reader
 		FMovementState MovementState;
 		
 		TState<IErrorPtr> LastError;
+		
+		FDeviceId&       GetId();
+		FDeviceId const& GetId() const;
+		
+		IDeviceReader&       GetReader();
+		IDeviceReader const& GetReader() const;
+		
+		IDeviceFamily&       GetFamily();
+		IDeviceFamily const& GetFamily() const;
 
 		void Tick(float deltaSecs);
 

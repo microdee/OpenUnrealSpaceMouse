@@ -10,18 +10,20 @@
  */
 
 #include "SpaceMouseRuntime/RuntimeManager.h"
+#include "SpaceMouseRuntime.h"
 
 namespace SpaceMouse::Runtime
 {
-	FRuntimeManager GRuntimeManager {};
+	TModuleBoundObject<FSpaceMouseRuntimeModule, FRuntimeManager> GRuntimeManager {};
 	
 	FRuntimeManager& FRuntimeManager::Get()
 	{
-		return GRuntimeManager;
+		return GRuntimeManager.GetChecked();
 	}
 
 	FSmUserSettings FRuntimeManager::GetUserSettings()
 	{
+		// TODO: support global runtime settings
 		static FSmUserSettings settings {};
 		return settings;
 	}

@@ -33,7 +33,7 @@ namespace SpaceMouse::Reader
 		};
 	}
 
-	void FSpaceNavigatorHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
+	void FSpaceNavigatorHidFamily::FFactory::SubmitKnownDeviceModels(TArray<TSharedRef<FDeviceModel>>& models)
 	{
 		models.Append({
 			MakeHidDeviceModel<FSpaceNavigatorHidFamily, FSeparateReportTransRotHidReader>(

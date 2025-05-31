@@ -76,7 +76,7 @@ namespace SpaceMouse::Reader
 		Map3DConnexionModern(target.ButtonQueue);
 	}
 
-	void FSpaceMouseEnterpriseHidFamily::FFactory::SubmitKnownDeviceModels(TArray<FDeviceModel>& models)
+	void FSpaceMouseEnterpriseHidFamily::FFactory::SubmitKnownDeviceModels(TArray<TSharedRef<FDeviceModel>>& models)
 	{
 		models.Append({
 			MakeHidDeviceModel<FSpaceMouseEnterpriseHidFamily, FSingleReportTransRotHidReader>(

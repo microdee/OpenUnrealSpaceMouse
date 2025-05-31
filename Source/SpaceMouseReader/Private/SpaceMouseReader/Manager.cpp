@@ -2,19 +2,30 @@
 
 
 #include "SpaceMouseReader/Manager.h"
+#include "SpaceMouseReader/HidapiLayer.h"
 #include "Logging/StructuredLog.h"
 
 DEFINE_LOG_CATEGORY(LogSpaceMouseManager);
 
 namespace SpaceMouse::Reader
 {
-	IManager::IManager()
+	void IManager::Initialize()
 	{
-		IDeviceSource::OnRegistered().Add(InferDelegate::From(LifespanGuard, [this](IDeviceSource* devSource)
+		LastError.OnChange([this](IErrorPtr const& error)
 		{
-			UE_LOGFMT(LogSpaceMouseManager, Display, "Registering with manager");
+			error->ERROR_LOG(LogSpaceMouseManager, Warning);
+			if (auto hidError = error->AsExactly<Hid::FHidError>())
+			{
+				if (hidError->HidErrorMessage.Contains(TEXT_"not connected"))
+				{
+					RefreshDevices();
+				}
+			}
+		});
+		IDeviceSource::OnRegistered().Add(InferDelegate::From(SharedThis(this), [this](IDeviceSource* devSource)
+		{
 			DeviceSourceCache = IDeviceSource::GetAll();
-			LastError.SyncPull(devSource->LastError);
+			LastError.SyncPull(SharedThis(this), devSource->LastError);
 		}));
 	}
 
@@ -26,11 +37,11 @@ namespace SpaceMouse::Reader
 		
 		for (IDeviceSource* source : DeviceSourceCache)
 		{
-			for (FDevice& device : source->Devices)
+			for (auto const& device : source->Devices)
 			{
-				AccumulatedData += device.ProcessedData;
-				NormData += device.NormData;
-				MovementState.Accumulate(device.MovementState);
+				AccumulatedData += device->ProcessedData;
+				NormData += device->NormData;
+				MovementState.Accumulate(device->MovementState);
 			}
 		}
 
@@ -56,6 +67,11 @@ namespace SpaceMouse::Reader
 	FBool const& IManager::GetButton(Buttons::ECmd cmd)
 	{
 		return Buttons.FindOrAdd(cmd, FBool(false));
+	}
+
+	void IManager::RefreshDevices()
+	{
+		for (IDeviceSource* source : DeviceSourceCache) source->RefreshDevices();
 	}
 
 	bool IManager::IsAnyDeviceAvailable() const

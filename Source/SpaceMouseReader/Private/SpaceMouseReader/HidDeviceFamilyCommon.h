@@ -21,18 +21,16 @@ namespace SpaceMouse::Reader
 	using namespace Mcro::Common;
 	
 	template <typename Family, typename Reader, typename... ExtraReaderArgs>
-	FDeviceModel MakeHidDeviceModel(FStringView const& name, uint16 vid, uint16 pid, EModelConfidence confidence, ExtraReaderArgs&&... extraReaderArgs)
+	TSharedRef<FDeviceModel> MakeHidDeviceModel(FStringView const& name, uint16 vid, uint16 pid, EModelConfidence confidence, ExtraReaderArgs&&... extraReaderArgs)
 	{
-		return FDeviceModel(
-			FDeviceId()
-				.WithAnsi(Ansi::New<FDeviceModelName>(name))
-				.WithAnsi(Ansi::New<Hid::FHidDeviceId>(vid, pid)),
-			confidence
-		)
-		.WithAnsi(Ansi::New<FCreateHidDevice>([extraReaderArgs...](FDevice& device, Hid::FHidDeviceInfo const& info)
-		{
-			device.WithAnsi(Ansi::New<Family>())
-				.WithAnsi(Ansi::New<Reader>(info, extraReaderArgs...));
-		}));
+		return MakeShared<FDeviceModel>(confidence)
+			->With<FDeviceId>()->With([&name, vid, pid](FDeviceId& id)
+			{
+				id.With(new FDeviceModelName(name)).With(new Hid::FHidDeviceId(vid, pid));
+			})
+			->With(new FCreateHidDevice([extraReaderArgs...](FDevice& device, Hid::FHidDeviceInfo const& info)
+			{
+				device.With<Family>()->With(new Reader(info, extraReaderArgs...));
+			}));
 	}
 }

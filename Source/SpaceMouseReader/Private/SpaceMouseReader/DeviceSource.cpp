@@ -7,13 +7,13 @@ namespace SpaceMouse::Reader
 {
 	void IDeviceSource::Tick(float deltaSecs)
 	{
-		for (FDevice& device : Devices)
-			device.Tick(deltaSecs);
+		for (auto const& device : Devices)
+			device->Tick(deltaSecs);
 	}
 
 	void IDeviceSource::SetUserSettings(TValueThunk<FSmUserSettings> const& userSettings)
 	{
-		for (FDevice& device : Devices)
-			device.UserSettings = userSettings;
+		for (auto const& device : Devices)
+			device->UserSettings = userSettings;
 	}
 }

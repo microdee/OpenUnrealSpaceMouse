@@ -27,7 +27,7 @@ namespace SpaceMouse::Reader
 		{
 		public:
 			FFactory() { Register(); }
-			virtual void SubmitKnownDeviceModels(TArray<FDeviceModel>& models) override;
+			virtual void SubmitKnownDeviceModels(TArray<TSharedRef<FDeviceModel>>& models) override;
 		};
 		virtual IFactory& GetFactory() override;
 	};

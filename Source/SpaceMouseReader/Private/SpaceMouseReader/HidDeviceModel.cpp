@@ -20,20 +20,30 @@ namespace SpaceMouse::Reader
 		: Setup(Forward<SetupFunc>(setup))
 	{}
 
+	void FCreateHidDevice::OnCreatedAt(FDeviceModel& parent)
+	{
+		Parent = WeakSelf(&parent);
+	}
+
 	// TODO: fix IComposable so it can provide safe parent reference mechanism without smart pointers
-	TMaybe<FDevice> FCreateHidDevice::CreateHidDevice(Hid::FHidDeviceInfo const& info, FDeviceModel const& parent) const
+	TMaybe<TSharedRef<FDevice>> FCreateHidDevice::CreateHidDevice(Hid::FHidDeviceInfo const& info) const
 	{
 		ASSERT_CRASH(Setup);
-		FDevice output;
-		output.WithAnsi(Ansi::New<FDeviceId>(parent.Id)).With([&info](FDeviceId& id)
+		if (auto parent = Parent.Pin())
 		{
-			id.WithAnsi(Ansi::New<Hid::FHidDevicePath>(info.Path));
-		});
-		Setup(output, info);
-		if (output.LastError->IsValid())
-		{
-			return output.LastError.Get().ToSharedRef();
+			auto output = MakeShared<FDevice>()
+				->With(new FDeviceId(parent->GetId()))->With([&info](FDeviceId& id)
+				{
+					id.With(new Hid::FHidDevicePath(info.Path));
+				});
+			Setup(output.Get(), info);
+			if (output->LastError->IsValid())
+			{
+				return output->LastError.Get().ToSharedRef();
+			}
+			return output;
 		}
-		return output;
+		FORCE_CRASH(->WithMessage(TEXT_"Parent of FCreateHidDevice was invalid"));
+		UNAVAILABLE();
 	}
 }

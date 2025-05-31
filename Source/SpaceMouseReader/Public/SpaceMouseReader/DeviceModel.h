@@ -28,16 +28,17 @@ namespace SpaceMouse::Reader
 		Unsupported
 	};
 
-	struct SPACEMOUSEREADER_API FDeviceModel : IComposable
+	class SPACEMOUSEREADER_API FDeviceModel : public IComposable, public TSharedFromThis<FDeviceModel>
 	{
+	public:
 		FDeviceModel() = default;
-		FDeviceModel(FDeviceId&& deviceId, EModelConfidence confidence = EModelConfidence::Tested);
-		FDeviceModel(const FDeviceModel& Other);
-		FDeviceModel(FDeviceModel&& Other) noexcept;
+		FDeviceModel(EModelConfidence confidence);
 
-		FDeviceId Id;
+		FDeviceId& GetId();
+		FDeviceId const& GetId() const;
+
 		EModelConfidence Confidence = EModelConfidence::Tested;
 	};
 	
-	SPACEMOUSEREADER_API TArray<FDeviceModel> const& GetAllKnownDeviceModels();
+	SPACEMOUSEREADER_API TArray<TSharedRef<FDeviceModel>> const& GetAllKnownDeviceModels();
 }

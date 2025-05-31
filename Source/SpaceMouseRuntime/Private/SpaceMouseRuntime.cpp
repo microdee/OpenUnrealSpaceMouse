@@ -9,39 +9,26 @@
  *  @date 2025
  */
 
-#include "CoreMinimal.h"
-#include "IInputDeviceModule.h"
+#include "SpaceMouseRuntime.h"
 #include "Modules/ModuleManager.h"
 #include "SpaceMouseRuntime/SmInputDevice.h"
 
-class FSpaceMouseRuntimeModule : public IInputDeviceModule
-{
-public:
-
-    /** IModuleInterface implementation */
-    virtual void StartupModule() override;
-    virtual void ShutdownModule() override;
-    virtual bool SupportsDynamicReloading() override { return true; }
-    
-    virtual TSharedPtr<IInputDevice> CreateInputDevice(
-        TSharedRef<FGenericApplicationMessageHandler> const& messageHandler
-    ) override;
-};
-
 void FSpaceMouseRuntimeModule::StartupModule()
 {
-    IModularFeatures::Get().RegisterModularFeature(GetModularFeatureName(), this);
+	OnStartupModule.Broadcast();
+	IModularFeatures::Get().RegisterModularFeature(GetModularFeatureName(), this);
 }
 
 void FSpaceMouseRuntimeModule::ShutdownModule()
 {
-    IModularFeatures::Get().UnregisterModularFeature(GetModularFeatureName(), this);
+	OnShutdownModule.Broadcast();
+	IModularFeatures::Get().UnregisterModularFeature(GetModularFeatureName(), this);
 }
 
 TSharedPtr<IInputDevice> FSpaceMouseRuntimeModule::CreateInputDevice(
-    TSharedRef<FGenericApplicationMessageHandler> const& messageHandler
+	TSharedRef<FGenericApplicationMessageHandler> const& messageHandler
 ) {
-    return MakeShared<SpaceMouse::Runtime::FSmInputDevice>(messageHandler);
+	return MakeShared<SpaceMouse::Runtime::FSmInputDevice>(messageHandler);
 }
-    
+	
 IMPLEMENT_MODULE(FSpaceMouseRuntimeModule, SpaceMouseRuntime)

@@ -22,6 +22,7 @@ namespace SpaceMouse::Reader
 	class SPACEMOUSEREADER_API IDeviceSource
 		: public TAutoModularFeature<IDeviceSource>
 		, public FTickableGameObject
+		, public TSharedFromThis<IDeviceSource>
 	{
 	public:
 		IDeviceSource() = default;
@@ -33,12 +34,12 @@ namespace SpaceMouse::Reader
 		virtual bool IsTickableInEditor() const override { return true; }
 		virtual bool IsTickableWhenPaused() const override { return true; }
 
-		TArray<FDevice> Devices {};
+		TArray<TSharedRef<FDevice>> Devices {};
 		TEventDelegate<void()> OnDevicesChanged;
 		TState<IErrorPtr> LastError;
 		
 		virtual void RefreshDevices() {};
-		virtual TArray<FDevice> const& GetAvailableDevices() const = 0;
+		virtual TArray<TSharedRef<FDevice>> const& GetAvailableDevices() const = 0;
 
 		void SetUserSettings(TValueThunk<FSmUserSettings> const& userSettings);
 	};

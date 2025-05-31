@@ -31,7 +31,7 @@ namespace SpaceMouse::Reader
 			if (auto reader = component.TryGet<IDeviceReader>())
 			{
 				Reader = reader;
-				LastError.SyncPull(Reader->LastError);
+				LastError.SyncPull(SharedThis(this), reader->LastError);
 				return;
 			}
 			if (auto id = component.TryGet<FDeviceId>())
@@ -40,6 +40,42 @@ namespace SpaceMouse::Reader
 				return;
 			}
 		};
+	}
+
+	FDeviceId& FDevice::GetId()
+	{
+		ASSERT_CRASH(Id);
+		return *Id;
+	}
+
+	FDeviceId const& FDevice::GetId() const
+	{
+		ASSERT_CRASH(Id);
+		return *Id;
+	}
+
+	IDeviceReader& FDevice::GetReader()
+	{
+		ASSERT_CRASH(Reader);
+		return *Reader;
+	}
+
+	IDeviceReader const& FDevice::GetReader() const
+	{
+		ASSERT_CRASH(Reader);
+		return *Reader;
+	}
+
+	IDeviceFamily& FDevice::GetFamily()
+	{
+		ASSERT_CRASH(Family);
+		return *Family;
+	}
+
+	IDeviceFamily const& FDevice::GetFamily() const
+	{
+		ASSERT_CRASH(Family);
+		return *Family;
 	}
 
 	void FDevice::Tick(float deltaSecs)

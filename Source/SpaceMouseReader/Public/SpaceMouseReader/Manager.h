@@ -24,14 +24,12 @@ namespace SpaceMouse::Reader
 {
 	using namespace Mcro::Common;
 	
-	class SPACEMOUSEREADER_API IManager
+	class SPACEMOUSEREADER_API IManager : public TSharedFromThis<IManager>
 	{
 	public:
-		IManager();
 		virtual ~IManager() = default;
 
 	protected:
-		TSharedRef<FVoid> LifespanGuard = MakeShared<FVoid>();
 		TArray<IDeviceSource*> DeviceSourceCache;
 		FDeviceOutput PreviousAccumulatedData;
 		FDeviceOutput AccumulatedData;
@@ -40,6 +38,8 @@ namespace SpaceMouse::Reader
 		virtual FSmUserSettings GetUserSettings() = 0;
 		
 	public:
+		void Initialize();
+		
 		TMap<Buttons::ECmd, FBool> Buttons;
 		FMovementState MovementState;
 		
@@ -50,6 +50,8 @@ namespace SpaceMouse::Reader
 		FVector FORCEINLINE GetNormalizedTranslation() const { return NormData.Translation; }
 		FRotator FORCEINLINE GetNormalizedRotation() const { return NormData.Rotation; }
 		FBool const& GetButton(Buttons::ECmd cmd);
+		
+		void RefreshDevices();
 
 		bool IsAnyDeviceAvailable() const;
 	};

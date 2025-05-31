@@ -19,7 +19,7 @@ namespace SpaceMouse::Reader
 			self.GetComponents<IDeviceIdBase>(),
 			0U,
 			[](uint32 const& t, uint32 const& u) { return t ^ u; },
-			[](IDeviceIdBase* i) { return GetTypeHash(&i); }
+			[](IDeviceIdBase* i) { return GetTypeHash(*i); }
 		);
 	}
 
@@ -43,12 +43,6 @@ namespace SpaceMouse::Reader
 
 	FString FDeviceId::ToString() const
 	{
-		namespace rv = ranges::views; 
-		return GetComponents<IDeviceIdBase>()
-			| rv::transform([](const IDeviceIdBase* i)
-			{
-				return TEXT_"{0}: ({1})" _FMT(i->GetType(), i);
-			})
-			| RenderAsString();
+		return GetComponents<IDeviceIdBase>() | RenderAsString();
 	}
 }

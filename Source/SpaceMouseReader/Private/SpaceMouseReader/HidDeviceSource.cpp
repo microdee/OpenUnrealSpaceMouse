@@ -10,6 +10,8 @@
  */
 
 #include "SpaceMouseReader/HidDeviceSource.h"
+
+#include "SpaceMouseReader.h"
 #include "SpaceMouseReader/HidDeviceModel.h"
 
 namespace SpaceMouse::Reader
@@ -26,37 +28,44 @@ namespace SpaceMouse::Reader
 		Register();
 	}
 
-	TArray<FDevice> const& FHidDeviceSource::GetAvailableDevices() const
+	TArray<TSharedRef<FDevice>> const& FHidDeviceSource::GetAvailableDevices() const
 	{
 		return Devices;
 	}
 
 	void FHidDeviceSource::RefreshDevices()
 	{
+		NextCheck = 0;
 		ConnectedDevices.Reset();
-		uint32 devCombo = 0;
-		auto result = Hid::EnumerateDevices([this, &devCombo](int32, Hid::FHidDeviceInfo const& info)
+		RunInThread(ENamedThreads::AnyThread, SharedThis(this), [this]
 		{
-			for (const FDeviceModel* model : GetKnownHidDevices())
+			uint32 devCombo = 0;
+			auto result = Hid::EnumerateDevices([this, &devCombo](int32, Hid::FHidDeviceInfo const& info)
 			{
-				auto& id = model->Id.Get<Hid::FHidDeviceId>();
-				if (id.VidPid.Vid == info.VendorId && id.VidPid.Pid == info.ProductId)
+				for (auto const& weakModel : GetKnownHidDevices())
+					if (auto model = weakModel.Pin())
+					{
+						auto&& id = model->GetId().Get<Hid::FHidDeviceId>();
+						if (id.VidPid.Vid == info.VendorId && id.VidPid.Pid == info.ProductId)
+						{
+							ConnectedDevices.Add({weakModel, info});
+							devCombo ^= id.Hash;
+							return;
+						}
+					}
+			});
+			RunInGameThread(SharedThis(this), [this, devCombo, result]
+			{
+				if (result.HasError())
+					LastError = result.GetError();
+				
+				if (DeviceCombination.HasChangedFrom(devCombo))
 				{
-					ConnectedDevices.Add({model, info});
-					devCombo ^= id.Hash;
-					return;
+					ConnectAvailableDevices();
+					OnDevicesChanged.Broadcast();
 				}
-			}
+			});
 		});
-		
-		if (result.HasError())
-			LastError = result.GetError();
-		
-		if (DeviceCombination.HasChangedFrom(devCombo))
-		{
-			ConnectAvailableDevices();
-			OnDevicesChanged.Broadcast();
-		}
 	}
 
 	void FHidDeviceSource::Tick(float deltaSecs)
@@ -64,43 +73,77 @@ namespace SpaceMouse::Reader
 		if (NextCheck >= CVarCheckRate.GetValueOnAnyThread())
 		{
 			RefreshDevices();
-			NextCheck = 0;
 		}
 		NextCheck += deltaSecs;
 		IDeviceSource::Tick(deltaSecs);
+		RemoveFlaggedDevices();
 	}
 
-	ranges::any_view<const FDeviceModel*> FHidDeviceSource::GetKnownHidDevices()
+	ranges::any_view<TWeakPtr<FDeviceModel>> FHidDeviceSource::GetKnownHidDevices()
 	{
 		namespace rv = ranges::views;
 		return GetAllKnownDeviceModels()
-			| rv::transform([](FDeviceModel const& model)
+			| rv::filter([](TSharedRef<FDeviceModel> const& model) -> bool
 			{
-				return &model;
+				return model->TryGet<FCreateHidDevice>() && model->GetId().TryGet<Hid::FHidDeviceId>();
 			})
-			| rv::filter([](const FDeviceModel* model) -> bool
+			| rv::transform([](TSharedRef<FDeviceModel> const& model)
 			{
-				return model->TryGet<FCreateHidDevice>() && model->Id.TryGet<Hid::FHidDeviceId>();
-			});
+				return model.ToWeakPtr();
+			})
+		;
 	}
 
 	void FHidDeviceSource::ConnectAvailableDevices()
 	{
 		Devices.Reset(ConnectedDevices.Num());
 		for (FModel const& model : ConnectedDevices)
-		{
-			auto&& deviceCreator = model.Model->Get<FCreateHidDevice>();
-			if (auto result = deviceCreator.CreateHidDevice(model.Info, *model.Model))
+			if (auto deviceModel = model.Model.Pin())
 			{
-				LastError.SyncPull(result.GetValue().LastError);
-				Devices.Emplace(MoveTemp(result).StealValue());
+				auto&& deviceCreator = deviceModel->Get<FCreateHidDevice>();
+				if (auto result = deviceCreator.CreateHidDevice(model.Info))
+				{
+					Devices.Add(result.GetValue());
+					result.GetValue()->LastError.OnChange(SharedThis(this), [this, info = model.Info](IErrorPtr const& error)
+					{
+						LastError = error;
+						if (auto hidError = error->AsExactly<Hid::FHidError>())
+						{
+							if (hidError->HidErrorMessage.Contains(TEXT_"not connected"))
+							{
+								FlagDeviceRemove(UnrealConvert(info.Path));
+							}
+						}
+					});
+					LastError.SyncPull(SharedThis(this), result.GetValue()->LastError);
+				}
+				else
+				{
+					LastError = result.GetError();
+				}
 			}
-			else
-			{
-				LastError = result.GetError();
-			}
-		}
 	}
 
-	FHidDeviceSource GHidDeviceSource {};
+	void FHidDeviceSource::FlagDeviceRemove(FString const& path)
+	{
+		int removeAt = Devices.IndexOfByPredicate([&path](TSharedRef<FDevice> const& device)
+		{
+			auto&& devPath = device->GetId().Get<Hid::FHidDevicePath>();
+			return path.Equals(devPath.Name);
+		});
+		RemoveAt.Enqueue(removeAt);
+		ConnectedDevices.RemoveAll([&path](FModel const& model)
+		{
+			return UnrealConvert(model.Info.Path).Equals(path);
+		});
+	}
+
+	void FHidDeviceSource::RemoveFlaggedDevices()
+	{
+		int removeAt = -1;
+		while (RemoveAt.Dequeue(removeAt))
+			Devices.RemoveAt(removeAt);
+	}
+
+	TModuleBoundObject<FSpaceMouseReaderModule, FHidDeviceSource> GHidDeviceSource {};
 }
