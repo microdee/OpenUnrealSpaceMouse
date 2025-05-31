@@ -1,0 +1,12 @@
+﻿name: Community Contributions
+source: https://github.com/microdee/OpenUnrealSpaceMouse
+project: https://github.com/microdee/OpenUnrealSpaceMouse
+authors:
+    - Eric Ottosson (Linux setup guide)
+    - Gabor Papp (Initially investigating macOS support)
+    - enzo_molinari (plugin icon)
+    - adlord (testing with wireless devices)
+    - mrboni (testing with discontinued SpacePilot Pro)
+license: N/A
+reasoning: |
+    These people helped me greatly with development/troubleshooting/testing of Open Unreal SpaceMouse
