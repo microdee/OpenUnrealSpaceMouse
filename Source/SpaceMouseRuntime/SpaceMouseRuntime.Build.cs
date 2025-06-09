@@ -9,8 +9,6 @@
  *  @date 2025
  */
 
-
-
 using UnrealBuildTool;
 
 public class SpaceMouseRuntime : ModuleRules
@@ -21,7 +19,6 @@ public class SpaceMouseRuntime : ModuleRules
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
         UndefinedIdentifierWarningLevel = WarningLevel.Off;
-            
         
         PublicDependencyModuleNames.AddRange(new []
         {

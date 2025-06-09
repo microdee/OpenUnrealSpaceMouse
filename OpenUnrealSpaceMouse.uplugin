@@ -12,8 +12,8 @@
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/ad5ae5bca73f4a84a693394a0542fc92",
 	"SupportURL": "https://github.com/microdee/OpenUnrealSpaceMouse/issues",
 	"CanContainContent": false,
-	"IsBetaVersion": false,
-	"Installed": true,
+	"IsBetaVersion": true,
+	"Installed": false,
 	"RequiresBuildPlatform": false,
 	"Plugins": [
 		{
