@@ -179,7 +179,7 @@ namespace SpaceMouse::Reader::Hid
 		: DeviceInfo(deviceInfo)
 	{
 		DeviceOpenResult = Success();
-		UE_LOGFMT(LogSpaceMouseHid, Log, "Opening device:\n{DevInfo}", deviceInfo.ToString());
+		FMT_LOG(LogSpaceMouseHid, Log, "Opening device:\n{0}", deviceInfo);
 		Device = hid_open_path(deviceInfo.Path.c_str());
 		if (UNLIKELY(!Device))
 		{
@@ -209,7 +209,7 @@ namespace SpaceMouse::Reader::Hid
 
 	FScopedHidDevice::~FScopedHidDevice()
 	{
-		UE_LOGFMT(LogSpaceMouseHid, Log, "Closing device:\n{DevInfo}", UnrealConvert(DeviceInfo.Path));
+		FMT_LOG(LogSpaceMouseHid, Log, "Closing device:\n{0}", DeviceInfo.Path);
 		if (Device) hid_close(Device);
 	}
 

@@ -129,10 +129,7 @@ void USpaceMouseConfig::RegisterCustomInputBinding(FUICommandInfo const& cmd)
 	auto key = TEXT_"{0}_{1}" _FMT(cmd.GetBindingContext(), cmd.GetCommandName()); 
 	CustomInputBindings.Add(key, {cmd.GetBindingContext(), cmd.GetCommandName()});
 	SaveConfig();
-	UE_LOGFMT(LogSpaceMouseConfig, Display, "Input Binding {Context} / {Name} is handled",
-		cmd.GetBindingContext().ToString(),
-		cmd.GetCommandName().ToString()
-	);
+	FMT_LOG(LogSpaceMouseConfig, Display, "Input Binding {0} / {1} is handled", cmd.GetBindingContext(), cmd.GetCommandName());
 }
 
 void USpaceMouseConfig::HandleUserDefinedChordChanged(FUICommandInfo const& cmd)
