@@ -107,7 +107,7 @@ namespace SpaceMouse::Reader
 					result.GetValue()->LastError.OnChange(SharedThis(this), [this, info = model.Info](IErrorPtr const& error)
 					{
 						LastError = error;
-						if (auto hidError = error->AsExactly<Hid::FHidError>())
+						if (auto hidError = error->As<Hid::FHidError>())
 						{
 							if (hidError->HidErrorMessage.Contains(TEXT_"not connected"))
 							{

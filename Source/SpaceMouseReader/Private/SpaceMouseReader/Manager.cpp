@@ -14,7 +14,7 @@ namespace SpaceMouse::Reader
 		LastError.OnChange([this](IErrorPtr const& error)
 		{
 			error->ERROR_LOG(LogSpaceMouseManager, Warning);
-			if (auto hidError = error->AsExactly<Hid::FHidError>())
+			if (auto hidError = error->As<Hid::FHidError>())
 			{
 				if (hidError->HidErrorMessage.Contains(TEXT_"not connected"))
 				{
