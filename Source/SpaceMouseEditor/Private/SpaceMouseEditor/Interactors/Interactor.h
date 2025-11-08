@@ -36,7 +36,7 @@ namespace SpaceMouse::Editor::Interactor
 
 	public:
 		virtual void Tick() = 0;
-		TEventDelegate<void(IInteractionContext& ctx)> OnContextFocus;
+		TEventDelegate<void(IInteractionContext* ctx)> OnContextFocus;
 		virtual void BeginContext() {};
 		virtual void EndContext() {};
 

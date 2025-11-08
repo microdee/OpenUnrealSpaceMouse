@@ -20,7 +20,6 @@ public class SpaceMouseEditor : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
-        UndefinedIdentifierWarningLevel = WarningLevel.Off;
 
         if (Target.Type == TargetType.Editor)
         {

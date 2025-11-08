@@ -18,7 +18,6 @@ public class SpaceMouseRuntime : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
-        UndefinedIdentifierWarningLevel = WarningLevel.Off;
         
         PublicDependencyModuleNames.AddRange(new []
         {
