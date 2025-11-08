@@ -1,5 +1,15 @@
-// Copyright 2018-2021 David Morasz All Rights Reserved.
-// This source code is under MIT License https://github.com/microdee/UE4-SpaceMouse/blob/master/LICENSE
+/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
+
+
 
 using UnrealBuildTool;
 
@@ -7,31 +17,23 @@ public class SpaceMouseEditor : ModuleRules
 {
     public SpaceMouseEditor(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
-        bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
-
-        IsRedistributableOverride = true;;
-        bLegalToDistributeObjectCode = true;
-        bPrecompile = true;
-        PrecompileForTargets = PrecompileTargetsType.Any;
-        
-        PublicDependencyModuleNames.AddRange(new []
-        {
-            "Core",
-            "CoreUObject",
-            "Engine",
-            "InputCore",
-            "PropertyEditor",
-
-            "SpaceMouseReader",
-            "SpaceMouseRuntime"
-        });
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
 
         if (Target.Type == TargetType.Editor)
         {
-            PublicDependencyModuleNames.AddRange(new []
+            PrivateDependencyModuleNames.AddRange(new []
             {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "PropertyEditor",
+
+                "SpaceMouseReader",
+                "SpaceMouseRuntime",
+                
                 "Slate",
                 "SlateCore",
                 "UnrealEd",
@@ -39,7 +41,9 @@ public class SpaceMouseEditor : ModuleRules
                 "DetailCustomizations",
                 "LevelEditor",
                 "ApplicationCore",
-                "RHI"
+                "RHI",
+                
+                "Mcro",
             });
         }
     }
