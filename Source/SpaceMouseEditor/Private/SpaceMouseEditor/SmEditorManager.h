@@ -48,9 +48,7 @@ namespace SpaceMouse::Editor
 		FString FocusedVpType {};
 
 		TSharedPtr<FSmViewportOverlay> OrbitingOverlay;
-
-		// TODO: Not used anywhere?
-		static FKeyEvent GetKeyEventFromKey(const FInputActionKeyMapping& mapping);
+		
 		static bool AllowPerspectiveCameraMoveEvent(FEditorViewportClient* cvp);
 		FVector GetOrbitingPosDeltaOffset(FRotator rotDelta, float forwardDelta);
 

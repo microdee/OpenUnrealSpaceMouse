@@ -39,51 +39,55 @@ using namespace Mcro::Common;
 using namespace SpaceMouse::Runtime;
 using namespace SpaceMouse::Reader;
 
-TObserveModule<FSpaceMouseEditorModule> GObserveModule {{
-	.OnStartup = []
-	{
-		using namespace Mcro::Common::InferDelegate;
+namespace
+{
+	[[maybe_unused]]
+	TObserveModule<FSpaceMouseEditorModule> GObserveModule {{
+		.OnStartup = []
+		{
+			using namespace Mcro::Common::InferDelegate;
+			
+			auto& propertyModule = LoadUnrealModule<FPropertyEditorModule>();
+	    
+			propertyModule.RegisterCustomClassLayout(
+				NAME_"SpaceMouseConfig",
+				From(&FSpaceMouseConfigCustomization::Make)
+			);
+
+			propertyModule.NotifyCustomizationModuleChanged();
+
+			auto& settingsModule = LoadUnrealModule<ISettingsModule>();
+			auto settings = GetMutableDefault<USpaceMouseConfig>();
+
+			auto settingsSection = settingsModule.RegisterSettings(
+				NAME_"Editor", NAME_"Plugins", NAME_"SpaceMouse",
+				INVTEXT_"SpaceMouse",
+				INVTEXT_"Configure SpaceMice for the editor",
+				settings
+			);
+
+			if (settingsSection.IsValid())
+				settingsSection->OnModified().BindLambda([]
+				{
+					auto settings = GetMutableDefault<USpaceMouseConfig>();
+					settings->SaveConfig();
+					return true;
+				});
+
+			settings->RegisterInputBindingNotification();
+		},
 		
-		auto& propertyModule = LoadUnrealModule<FPropertyEditorModule>();
-    
-		propertyModule.RegisterCustomClassLayout(
-			NAME_"SpaceMouseConfig",
-			From(&FSpaceMouseConfigCustomization::Make)
-		);
-
-		propertyModule.NotifyCustomizationModuleChanged();
-
-		auto& settingsModule = LoadUnrealModule<ISettingsModule>();
-		auto settings = GetMutableDefault<USpaceMouseConfig>();
-
-		auto settingsSection = settingsModule.RegisterSettings(
-			NAME_"Editor", NAME_"Plugins", NAME_"SpaceMouse",
-			INVTEXT_"SpaceMouse",
-			INVTEXT_"Configure SpaceMice for the editor",
-			settings
-		);
-
-		if (settingsSection.IsValid())
-			settingsSection->OnModified().BindLambda([]
-			{
-				auto settings = GetMutableDefault<USpaceMouseConfig>();
-				settings->SaveConfig();
-				return true;
-			});
-
-		settings->RegisterInputBindingNotification();
-	},
-	
-	.OnShutdown = []
-	{
-		if (!UObjectInitialized()) return;
-		if (auto propertyModule = GetUnrealModulePtr<FPropertyEditorModule>())
-			propertyModule->UnregisterCustomClassLayout(NAME_"SpaceMouseConfig");
-    
-		if (auto settingsModule = GetUnrealModulePtr<ISettingsModule>())
-			settingsModule->UnregisterSettings(NAME_"Editor", NAME_"Plugins", NAME_"SpaceMouse");
-	}
-}};
+		.OnShutdown = []
+		{
+			if (!UObjectInitialized()) return;
+			if (auto propertyModule = GetUnrealModulePtr<FPropertyEditorModule>())
+				propertyModule->UnregisterCustomClassLayout(NAME_"SpaceMouseConfig");
+	    
+			if (auto settingsModule = GetUnrealModulePtr<ISettingsModule>())
+				settingsModule->UnregisterSettings(NAME_"Editor", NAME_"Plugins", NAME_"SpaceMouse");
+		}
+	}};
+}
 
 // Add default functionality here for any ISpaceMouseConfig functions that are not pure virtual.
 USpaceMouseConfig::USpaceMouseConfig(const FObjectInitializer& oi) : Super(oi)

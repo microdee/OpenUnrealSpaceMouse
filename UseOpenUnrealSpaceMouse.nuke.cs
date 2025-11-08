@@ -8,26 +8,41 @@ using Serilog;
 using System;
 using Nuke.Cola.FolderComposition;
 using System.Security.Cryptography;
-
-public static class UseOpenUnrealSpaceMouseGraph
-{
-    public static ITargetDefinition OpenUnrealSpaceMouseGraph(this ITargetDefinition target) => target
-        .After<IMcroLicenseRegion>(_ => _.EnsureMcroLicense, _ => _.RenderMcroAttribution)
-        .After<IUseYamlCpp>()
-        .After<IUseRangeV3>()
-    ;
-}
+using Nuke.Unreal.Plugins;
 
 [ImplicitBuildInterface]
 public interface IUseOpenUnrealSpaceMouse : INukeBuild
 {
-    Target GenerateOpenUnrealSpaceMouseDocs => _ => _
-        .Triggers<IOpenUnrealSpaceMouseLicenseRegion>(_ => _.RenderOpenUnrealSpaceMouseAttribution)
+    Target BuildOuesm => _ => _
+        .DependsOn<IUseHidapi>(i => i.PrepareHidapi)
+        .McroDependency()
         .Executes(() =>
         {
-            ToolResolver.GetPathTool("doxygen")(
-                (this.ScriptFolder() / "Doxyfile").ToString(),
-                workingDirectory: this.ScriptFolder()
+            var self = (UnrealBuild)this;
+            var thisPlugin = UnrealPlugin.Get(this.ScriptFolder());
+            var output = thisPlugin.BuildPlugin(self);
+            var deploy = output.Parent / "Deploy";
+            deploy.CreateOrCleanDirectory();
+            var pluginsOutputDir = self.GetOutput() / "Plugins";
+
+            foreach (var plugin in pluginsOutputDir.GetDirectories())
+            {
+                Log.Information("Deploying {0}", plugin.Name);
+                (plugin / "Build").Copy(deploy / plugin.Name, ExistsPolicy.MergeAndOverwrite);
+            }
+            var archives = self.ProjectFolder / ".deploy";
+            var zipName = $"{thisPlugin.Name}-{self.Platform}-V.{thisPlugin.Version}-UE.{Unreal.Version(self).VersionPatch}";
+
+            Log.Information("Archiving for distribution");
+            deploy.ZipTo(
+                archives / $"{zipName}.zip",
+                f => !f.HasExtension(".pdb") && !f.HasExtension(".exp")
+            );
+
+            Log.Information("Archiving debug symbols");
+            deploy.ZipTo(
+                archives / $"{zipName}-DebugSymbols.zip",
+                f => f.HasExtension(".pdb") || f.HasExtension(".exp")
             );
         });
 }

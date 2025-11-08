@@ -69,7 +69,7 @@ namespace SpaceMouse::Editor
 			pos2
 		);
 		
-		DistanceText->SetText(FText::FromString(PRINTF_(pivotDistance) "%.2f cm"));
+		DistanceText->SetText(INVTEXT_"{0} cm" _FMT(pivotDistance));
 
 		pos2 /= dpiScale;
 		pos2 -= DistanceText->GetDesiredSize() / 2.0f;

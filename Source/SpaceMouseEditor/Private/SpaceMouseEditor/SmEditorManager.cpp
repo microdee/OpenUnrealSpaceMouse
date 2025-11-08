@@ -209,24 +209,6 @@ namespace SpaceMouse::Editor
 		bFinishLearning = true;
 	}
 
-	FKeyEvent FSmEditorManager::GetKeyEventFromKey(const FInputActionKeyMapping& mapping)
-	{
-		const uint32* kc;
-		const uint32* cc;
-		FInputKeyManager::Get().GetCodesFromKey(mapping.Key, kc, cc);
-	
-		return FKeyEvent(
-			mapping.Key, FModifierKeysState(
-				mapping.bShift, false,
-				mapping.bCtrl, false,
-				mapping.bAlt, false,
-				mapping.bCmd, false,
-				false
-			),
-			0, false, cc ? *cc : 0, kc ? *kc : 0
-		);
-	}
-
 	bool FSmEditorManager::AllowPerspectiveCameraMoveEvent(FEditorViewportClient* cvp)
 	{
 		// TODO: handle different kinds of viewports with modular features
