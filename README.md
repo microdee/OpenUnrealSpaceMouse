@@ -24,14 +24,10 @@ Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed t
   - [Credits](#credits)
 
 # Installation
-  
-**Pre-Compiled for UE 4.23 .. 4.26.**
 
 Demo video: https://youtu.be/owcSTzs8p-8
 
-**[Download manually for free](https://github.com/microdee/UE4-SpaceMouse/releases/latest)**
-
-**[Buy it via the Marketplace](https://www.unrealengine.com/marketplace/en-US/product/spacemouse-for-unreal-engine)**
+**[Download manually for free](https://github.com/microdee/OpenUnrealSpaceMouse/releases/latest)**
 
 **If you have a code project just use this repo as submodule**
 ```
@@ -162,7 +158,7 @@ To make a pre-built release for Linux, read the [Linux Build Guide](LINUX.md).
   * FIXED
 * Jumping forward periodically when leaning / going forward with the camera
   * __TL;DR:__ Open 3DxWare per-application settings and disable scroll-wheel emulation (disable tilt axis) (per-application settings are opened by the Menu button or bottom left button on your SpaceMouse by default)
-  * [See issue](https://github.com/microdee/UE4-SpaceMouse/issues/12)
+  * [See issue](https://github.com/microdee/OpenUnrealSpaceMouse/issues/12)
 * If you install or update 3DxWare with their new plugin (TDxUnrealEditor), and you had this plugin before, you might experience undefined interaction glitches.
   * Remove either this or the 3DConnexion plugin (TDxUnrealEditor) according to your preference.
 
