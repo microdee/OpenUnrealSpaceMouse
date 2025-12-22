@@ -60,8 +60,10 @@ public partial class Hidapi : ModuleRules
 				if (target.Platform == UnrealTargetPlatform.TVOS)
 					SetupLibrary_TVOS(target);
 				
+#if UE_5_4_OR_LATER
 				if (target.Platform == UnrealTargetPlatform.VisionOS)
 					SetupLibrary_VisionOS(target);
+#endif
 				
 		if (!PlatformSetup || !IncludesSetup)
 		{
