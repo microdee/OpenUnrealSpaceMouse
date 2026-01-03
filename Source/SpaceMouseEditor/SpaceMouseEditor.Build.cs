@@ -9,7 +9,6 @@ public class SpaceMouseEditor : ModuleRules
     {
         PCHUsage = PCHUsageMode.NoPCHs;
         bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
 
         IsRedistributableOverride = true;;
         bLegalToDistributeObjectCode = true;
@@ -39,7 +38,8 @@ public class SpaceMouseEditor : ModuleRules
                 "DetailCustomizations",
                 "LevelEditor",
                 "ApplicationCore",
-                "RHI"
+                "RHI",
+                "GraphEditor"
             });
         }
     }

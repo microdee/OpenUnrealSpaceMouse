@@ -15,7 +15,24 @@
 #include "HAL/PlatformApplicationMisc.h"
 #include "SmUeVersion.h"
 #include "Framework/Application/SlateApplication.h"
-//#include "Object.h"
+#include "SGraphPanel.h"
+
+bool FSmMouseWheelInputProcessor::HandleMouseWheelOrGestureEvent(FSlateApplication& SlateApp, const FPointerEvent& InWheelEvent, const FPointerEvent* InGestureEvent)
+{
+    if (!Owner)
+    {
+        return false;
+    }
+    
+    float WheelDelta = InWheelEvent.GetWheelDelta();
+    if (FMath::IsNearlyZero(WheelDelta))
+    {
+        return false;
+    }
+    
+    bool bCtrlDown = InWheelEvent.IsControlDown();
+    return Owner->ApplyMouseWheelZoom(WheelDelta, InWheelEvent.GetScreenSpacePosition(), bCtrlDown);
+}
 
 void FSmEditorManager::Initialize()
 {
@@ -30,6 +47,8 @@ void FSmEditorManager::Initialize()
     
     auto& Ibm = FInputBindingManager::Get();
     Ibm.SaveInputBindings();
+    
+    RegisterMouseWheelProcessor();
 }
 
 void FSmEditorManager::Tick(float DeltaSecs)
@@ -37,12 +56,25 @@ void FSmEditorManager::Tick(float DeltaSecs)
     auto Settings = GetMutableDefault<USpaceMouseConfig>();
     FSpaceMouseManager::Tick(DeltaSecs);
 
-    // TODO: ignore camera movement when the player possesses a Pawn in PIE, but not when ejected or only SIE
 
-    ManageActiveViewport();
-    ManageOrbitingOverlay();
-    TriggerCustomButtons();
-    MoveActiveViewport(GetTranslation(), GetRotation());
+    // Check for Blueprint graph focus first
+    ManageActiveBlueprintGraph();
+    
+    if (ActiveGraphPanel.IsValid())
+    {
+        // Blueprint graph is focused - handle it (mouse wheel handled via input processor)
+        MoveBlueprintGraph(GetTranslation(), GetRotation());
+    }
+    else
+    {
+        // TODO: ignore camera movement when the player possesses a Pawn in PIE, but not when ejected or only SIE
+
+        // Normal 3D viewport handling
+        ManageActiveViewport();
+        ManageOrbitingOverlay();
+        TriggerCustomButtons();
+        MoveActiveViewport(GetTranslation(), GetRotation());
+    }
     
     if(bFinishLearning)
     {
@@ -426,4 +458,341 @@ const bool FSmEditorManager::IsActiveViewportInvalid(const TArray<FEditorViewpor
         if (Cvp == ActiveViewportClient) return false;
     }
     return true;
+}
+
+void FSmEditorManager::ManageActiveBlueprintGraph()
+{
+    auto Settings = GetMutableDefault<USpaceMouseConfig>();
+    
+    if (!Settings->bEnableBlueprintNavigation)
+    {
+        ActiveGraphPanel.Reset();
+        BlueprintZoomAccumulator = 0.0f;
+        bInstalledFractionalZoom = false;
+        CurrentDiscreteZoomLevel = 11;
+        return;
+    }
+    
+    TSharedPtr<SGraphPanel> FoundPanel = FindFocusedGraphPanel();
+    
+    if (FoundPanel.IsValid())
+    {
+        // Reset accumulator when switching to a different panel
+        if (ActiveGraphPanel.Pin() != FoundPanel)
+        {
+            BlueprintZoomAccumulator = 0.0f;
+            bInstalledFractionalZoom = false;
+            // Initialize discrete level from current zoom
+            float CurrentZoom = FoundPanel->GetZoomAmount();
+            CurrentDiscreteZoomLevel = FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(CurrentZoom);
+        }
+        ActiveGraphPanel = FoundPanel;
+        
+        // Install fractional zoom if not already done
+        if (!bInstalledFractionalZoom)
+        {
+            InstallFractionalZoom(FoundPanel);
+        }
+    }
+    else
+    {
+        ActiveGraphPanel.Reset();
+        BlueprintZoomAccumulator = 0.0f;
+        bInstalledFractionalZoom = false;
+        CurrentDiscreteZoomLevel = 11;
+    }
+}
+
+void FSmEditorManager::InstallFractionalZoom(TSharedPtr<SGraphPanel> GraphPanel)
+{
+    if (!GraphPanel.IsValid())
+    {
+        return;
+    }
+    
+    // Get the current zoom before replacing the container
+    float CurrentZoom = GraphPanel->GetZoomAmount();
+    
+    // Initialize discrete level from current zoom
+    CurrentDiscreteZoomLevel = FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(CurrentZoom);
+    
+    // Install a custom fractional zoom container
+    GraphPanel->SetZoomLevelsContainer<FFractionalZoomLevelsContainer>();
+    
+    // Restore the zoom level
+    FVector2D CurrentOffset = GraphPanel->GetViewOffset();
+    GraphPanel->RestoreViewSettings(CurrentOffset, CurrentZoom, FGuid());
+    
+    bInstalledFractionalZoom = true;
+}
+
+void FSmEditorManager::RegisterMouseWheelProcessor()
+{
+    if (!FSlateApplication::IsInitialized())
+    {
+        return;
+    }
+    
+    if (!MouseWheelProcessor.IsValid())
+    {
+        MouseWheelProcessor = MakeShared<FSmMouseWheelInputProcessor>(this);
+        FSlateApplication::Get().RegisterInputPreProcessor(MouseWheelProcessor);
+    }
+}
+
+void FSmEditorManager::UnregisterMouseWheelProcessor()
+{
+    if (FSlateApplication::IsInitialized() && MouseWheelProcessor.IsValid())
+    {
+        FSlateApplication::Get().UnregisterInputPreProcessor(MouseWheelProcessor);
+        MouseWheelProcessor.Reset();
+    }
+}
+
+bool FSmEditorManager::ApplyMouseWheelZoom(float WheelDelta, FVector2D ScreenSpacePosition, bool bCtrlDown)
+{
+    auto Settings = GetMutableDefault<USpaceMouseConfig>();
+    if (!Settings->bEnableBlueprintNavigation)
+    {
+        return false;
+    }
+    
+    if (!Settings->ActiveInBackground)
+    {
+        if (!FPlatformApplicationMisc::IsThisApplicationForeground())
+        {
+            return false;
+        }
+    }
+    
+    // Find graph panel under cursor using Slate's widget path
+    if (!FSlateApplication::IsInitialized())
+    {
+        return false;
+    }
+    
+    FSlateApplication& SlateApp = FSlateApplication::Get();
+    FWidgetPath WidgetPath = SlateApp.LocateWindowUnderMouse(ScreenSpacePosition, SlateApp.GetInteractiveTopLevelWindows());
+    
+    TSharedPtr<SGraphPanel> GraphPanel;
+    for (int32 i = WidgetPath.Widgets.Num() - 1; i >= 0; --i)
+    {
+        TSharedRef<SWidget> Widget = WidgetPath.Widgets[i].Widget;
+        if (Widget->GetType() == FName("SGraphPanel"))
+        {
+            GraphPanel = StaticCastSharedRef<SGraphPanel>(Widget);
+            break;
+        }
+    }
+    
+    if (!GraphPanel.IsValid())
+    {
+        return false;
+    }
+    
+    // Only handle if we've already installed fractional zoom on this panel (from ManageActiveBlueprintGraph)
+    if (ActiveGraphPanel.Pin() != GraphPanel || !bInstalledFractionalZoom)
+    {
+        // Let default Slate handling occur - we haven't taken over this panel yet
+        return false;
+    }
+    
+    // Get current zoom state
+    float CurrentZoom = GraphPanel->GetZoomAmount();
+    FVector2D CurrentOffset = GraphPanel->GetViewOffset();
+    
+    int32 OldLevel = CurrentDiscreteZoomLevel;
+    
+    // Index 11 is 100% - require Ctrl to zoom past it
+    constexpr int32 ZoomLevel100Percent = 11;
+    
+    // Apply discrete zoom step based on wheel direction
+    if (WheelDelta > 0)
+    {
+        // Scroll up = zoom in = higher level
+        int32 MaxLevel = bCtrlDown ? (FFractionalZoomLevelsContainer::NumZoomLevels - 1) : ZoomLevel100Percent;
+        CurrentDiscreteZoomLevel = FMath::Min(CurrentDiscreteZoomLevel + 1, MaxLevel);
+    }
+    else
+    {
+        // Scroll down = zoom out = lower level
+        CurrentDiscreteZoomLevel = FMath::Max(CurrentDiscreteZoomLevel - 1, 0);
+    }
+    
+    // Get the target zoom for this discrete level
+    float NewZoom = FFractionalZoomLevelsContainer::GetDiscreteZoomLevel(CurrentDiscreteZoomLevel);
+    
+    UE_LOG(LogTemp, Log, TEXT("MouseWheel Zoom: Level %d -> %d, Zoom %.3f -> %.3f"), 
+        OldLevel, CurrentDiscreteZoomLevel, CurrentZoom, NewZoom);
+    
+    // Get local mouse position for zoom-toward-cursor
+    FGeometry PanelGeometry = GraphPanel->GetCachedGeometry();
+    FVector2D LocalMousePos = PanelGeometry.AbsoluteToLocal(ScreenSpacePosition);
+    
+    // Convert zoom point to graph space at current zoom
+    FVector2D PointInGraph = CurrentOffset + (LocalMousePos / CurrentZoom);
+    
+    // Adjust offset so point stays at same graph position after zoom
+    FVector2D NewOffset = PointInGraph - (LocalMousePos / NewZoom);
+    
+    GraphPanel->RestoreViewSettings(NewOffset, NewZoom, FGuid());
+    
+    // We handled this event - consume it so Slate doesn't process it too
+    return true;
+}
+
+TSharedPtr<SGraphPanel> FSmEditorManager::FindFocusedGraphPanel()
+{
+    if (!FSlateApplication::IsInitialized())
+    {
+        return nullptr;
+    }
+    
+    FSlateApplication& SlateApp = FSlateApplication::Get();
+    TSharedPtr<SWidget> FocusedWidget = SlateApp.GetUserFocusedWidget(0);
+    
+    if (!FocusedWidget.IsValid())
+    {
+        return nullptr;
+    }
+    
+    // Check if focused widget is a graph panel
+    if (FocusedWidget->GetType() == FName("SGraphPanel"))
+    {
+        return StaticCastSharedPtr<SGraphPanel>(FocusedWidget);
+    }
+    
+    // Search ancestors for graph panel
+    TSharedPtr<SWidget> CurrentWidget = FocusedWidget;
+    while (CurrentWidget.IsValid())
+    {
+        TSharedPtr<SWidget> ParentWidget = CurrentWidget->GetParentWidget();
+        if (!ParentWidget.IsValid())
+        {
+            break;
+        }
+        
+        if (ParentWidget->GetType() == FName("SGraphPanel"))
+        {
+            return StaticCastSharedPtr<SGraphPanel>(ParentWidget);
+        }
+        
+        CurrentWidget = ParentWidget;
+    }
+    
+    return nullptr;
+}
+
+TSharedPtr<SGraphPanel> FSmEditorManager::FindGraphPanelInWidget(TSharedPtr<SWidget> Widget)
+{
+    if (!Widget.IsValid())
+    {
+        return nullptr;
+    }
+    
+    if (Widget->GetType() == FName("SGraphPanel"))
+    {
+        return StaticCastSharedPtr<SGraphPanel>(Widget);
+    }
+    
+    FChildren* Children = Widget->GetChildren();
+    if (Children)
+    {
+        for (int32 i = 0; i < Children->Num(); ++i)
+        {
+            TSharedRef<SWidget> Child = Children->GetChildAt(i);
+            TSharedPtr<SGraphPanel> Found = FindGraphPanelInWidget(Child);
+            if (Found.IsValid())
+            {
+                return Found;
+            }
+        }
+    }
+    
+    return nullptr;
+}
+
+void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
+{
+    if (!ActiveGraphPanel.IsValid() || !Enabled)
+    {
+        return;
+    }
+    
+    auto Settings = GetMutableDefault<USpaceMouseConfig>();
+    
+    if (!Settings->ActiveInBackground)
+    {
+        if (!FPlatformApplicationMisc::IsThisApplicationForeground())
+        {
+            return;
+        }
+    }
+    
+    if (trans.IsNearlyZero(SMALL_NUMBER) && rot.IsNearlyZero(SMALL_NUMBER))
+    {
+        return;
+    }
+    
+    TSharedPtr<SGraphPanel> GraphPanel = ActiveGraphPanel.Pin();
+    if (!GraphPanel.IsValid())
+    {
+        return;
+    }
+    
+    // Get current view state
+    FVector2D CurrentOffset = GraphPanel->GetViewOffset();
+    float CurrentZoom = GraphPanel->GetZoomAmount();
+    
+    // Orientation mapping:
+    // - trans.Y = left/right → Blueprint X
+    // - trans.X = up/down    → Blueprint Y
+    // - trans.Z = zoom       → Blueprint zoom (now SMOOTH!)
+    float PanX = trans.Y * Settings->BlueprintPanSpeed * (10.0f / 4.0f);
+    float PanY = trans.X * Settings->BlueprintPanSpeed * (10.0f / 4.0f);
+    
+    if (Settings->bBlueprintInvertPanX) PanX = -PanX;
+    if (Settings->bBlueprintInvertPanY) PanY = -PanY;
+    
+    // Apply pan (divide by zoom to make panning consistent at all zoom levels)
+    FVector2D NewOffset = CurrentOffset;
+    NewOffset.X -= PanX / CurrentZoom;
+    NewOffset.Y += PanY / CurrentZoom;
+    
+    // SMOOTH FRACTIONAL ZOOM - no more stepping!
+    // With our custom FFractionalZoomLevelsContainer installed, we can set any zoom value
+    float ZoomInput = trans.Z * Settings->BlueprintZoomSpeed * 0.005f;
+    if (Settings->bBlueprintInvertZoom) ZoomInput = -ZoomInput;
+    
+    // Apply zoom as a multiplier for smooth scaling
+    float ZoomMultiplier = 1.0f + ZoomInput;
+    float NewZoom = CurrentZoom * ZoomMultiplier;
+    
+    // Clamp to limits
+    const float MinZoom = 0.1f;
+    const float MaxZoom = 2.0f;
+    NewZoom = FMath::Clamp(NewZoom, MinZoom, MaxZoom);
+    
+    bool bZoomChanged = !FMath::IsNearlyEqual(NewZoom, CurrentZoom, 0.0001f);
+    
+    // Zoom toward center of the panel
+    if (bZoomChanged && NewZoom > 0.0f)
+    {
+        FGeometry PanelGeometry = GraphPanel->GetCachedGeometry();
+        FVector2D PanelSize = FVector2D(PanelGeometry.GetLocalSize());
+        FVector2D PanelCenter = PanelSize * 0.5;
+        
+        // Convert center to graph space at current zoom
+        FVector2D CenterInGraph = NewOffset + (PanelCenter / CurrentZoom);
+        
+        // Adjust offset so center stays at same graph position after zoom change
+        NewOffset = CenterInGraph - (PanelCenter / NewZoom);
+    }
+    
+    // Apply the view settings - with our fractional zoom container, this is smooth!
+    bool bPanChanged = !NewOffset.Equals(CurrentOffset, 0.01f);
+    if ((bPanChanged || bZoomChanged) && NewZoom > 0.0f)
+    {
+        GraphPanel->RestoreViewSettings(NewOffset, NewZoom, FGuid());
+    }
 }
