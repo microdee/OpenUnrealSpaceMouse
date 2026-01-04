@@ -106,6 +106,67 @@ public:
     )
     float OrthoZoomSpeed = 1.0;
 
+    // Blueprint Graph Navigation
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Enable SpaceMouse navigation for Blueprint graphs (pan and zoom)."
+        )
+    )
+    bool bEnableBlueprintNavigation = true;
+
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Speed multiplier for panning the Blueprint graph."
+        )
+    )
+    float BlueprintPanSpeed = 2.0f;
+
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Speed multiplier for zooming the Blueprint graph."
+        )
+    )
+    float BlueprintZoomSpeed = 0.5f;
+
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Invert X axis when panning Blueprint graphs."
+        )
+    )
+    bool bBlueprintInvertPanX = false;
+
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Invert Y axis when panning Blueprint graphs."
+        )
+    )
+    bool bBlueprintInvertPanY = false;
+
+    UPROPERTY(
+        EditAnywhere,
+        Config,
+        Category = "Behavior|Blueprint Graph",
+        meta = (
+            ToolTip = "Invert zoom direction for Blueprint graphs."
+        )
+    )
+    bool bBlueprintInvertZoom = false;
+
     UPROPERTY(
         EditAnywhere,
         Config,

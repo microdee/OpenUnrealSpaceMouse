@@ -10,7 +10,6 @@ public class SpaceMouseReader : ModuleRules
     {
         PCHUsage = PCHUsageMode.NoPCHs;
         bEnableUndefinedIdentifierWarnings = false;
-        CppStandard = CppStandardVersion.Cpp17;
 
         IsRedistributableOverride = true;
         bLegalToDistributeObjectCode = true;
