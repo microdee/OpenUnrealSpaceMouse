@@ -172,6 +172,8 @@ To make a pre-built release for Linux, read the [Linux Build Guide](LINUX.md).
 
 ## Credits
 
+* [@litruv](https://github.com/litruv) For panning BP graphs
+* [@TekuConcept](https://github.com/TekuConcept), [@ericotsn](https://github.com/ericotsn), [@DKingAlpha](https://github.com/DKingAlpha) For linux support
 * [HIDAPI](https://github.com/libusb/hidapi)
 * **Gabor Papp** for initially investigating macOS support
 * From UE4 forums:
