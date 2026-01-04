@@ -125,7 +125,7 @@ public:
             ToolTip = "Speed multiplier for panning the Blueprint graph."
         )
     )
-    float BlueprintPanSpeed = 1.0f;
+    float BlueprintPanSpeed = 2.0f;
 
     UPROPERTY(
         EditAnywhere,
@@ -135,7 +135,7 @@ public:
             ToolTip = "Speed multiplier for zooming the Blueprint graph."
         )
     )
-    float BlueprintZoomSpeed = 1.0f;
+    float BlueprintZoomSpeed = 0.5f;
 
     UPROPERTY(
         EditAnywhere,

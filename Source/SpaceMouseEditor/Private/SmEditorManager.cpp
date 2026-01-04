@@ -115,7 +115,7 @@ void FSmEditorManager::Tick(float DeltaSecs)
     if (ActiveGraphPanel.IsValid())
     {
         // Blueprint graph is focused - handle it (mouse wheel handled via input processor)
-        MoveBlueprintGraph(GetTranslation(), GetRotation());
+        MoveBlueprintGraph(GetTranslation(), GetRotation(), DeltaSecs);
     }
     else
     {
@@ -766,7 +766,7 @@ TSharedPtr<SGraphPanel> FSmEditorManager::FindGraphPanelInWidget(TSharedPtr<SWid
     return nullptr;
 }
 
-void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
+void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot, float DeltaSecs)
 {
     if (!ActiveGraphPanel.IsValid() || !Enabled)
     {
@@ -799,9 +799,8 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
     // Orientation mapping:
     // - trans.Y = left/right → Blueprint X
     // - trans.X = up/down    → Blueprint Y
-    // - trans.Z = zoom       → Blueprint zoom
-    float PanX = trans.Y * Settings->BlueprintPanSpeed * (2.5f);
-    float PanY = trans.X * Settings->BlueprintPanSpeed * (2.5f);
+    float PanX = trans.Y * Settings->BlueprintPanSpeed * DeltaSecs * 100;
+    float PanY = trans.X * Settings->BlueprintPanSpeed * DeltaSecs * 100;
     
     if (Settings->bBlueprintInvertPanX) PanX = -PanX;
     if (Settings->bBlueprintInvertPanY) PanY = -PanY;
@@ -813,7 +812,7 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
     
     // SMOOTH FRACTIONAL ZOOM - no more stepping!
     // With our custom FFractionalZoomLevelsContainer installed, we can set any zoom value
-    float ZoomInput = trans.Z * Settings->BlueprintZoomSpeed * 0.005f;
+    float ZoomInput = trans.Z * Settings->BlueprintZoomSpeed * DeltaSecs;
     if (Settings->bBlueprintInvertZoom) ZoomInput = -ZoomInput;
     
     // Apply zoom as a multiplier for smooth scaling

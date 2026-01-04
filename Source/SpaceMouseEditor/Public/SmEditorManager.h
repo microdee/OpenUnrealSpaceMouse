@@ -138,7 +138,7 @@ public:
     void ManageActiveBlueprintGraph();
     void TriggerCustomButtons();
     void MoveActiveViewport(FVector trans, FRotator rot);
-    void MoveBlueprintGraph(FVector trans, FRotator rot);
+    void MoveBlueprintGraph(FVector trans, FRotator rot, float DeltaSecs);
     const bool IsActiveViewportInvalid(const TArray<FEditorViewportClient*>& AllViewportClients);
     
     /** Apply a discrete zoom step from mouse wheel input. Returns true if handled. */
