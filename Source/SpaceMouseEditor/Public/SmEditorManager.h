@@ -43,101 +43,50 @@ struct SPACEMOUSEEDITOR_API FFractionalZoomLevelsContainer : public FZoomLevelsC
     
     static constexpr float MinZoom = 0.1f;
     static constexpr float MaxZoom = 2.0f;
-    static constexpr int32 NumZoomLevels = 17;
+    static constexpr int32 NumZoomLevels = 20;
     
-    /** Fixed discrete zoom levels for mouse wheel */
+    /** Fixed discrete zoom levels for mouse wheel 
+     * (from SNodePanel::FFixedZoomLevelsContainer)
+    */
     static constexpr float DiscreteZoomLevels[NumZoomLevels] = {
-        0.10f,
-        0.15f,
-        0.20f,
-        0.25f,
-        0.33f,
-        0.50f,
-        0.60f,
-        0.69f, // nice
-        0.75f,
-        0.80f,
-        0.90f,
-        1.00f,
-        1.10f,
-        1.25f,
-        1.50f,
-        1.75f,
-        2.00f 
+        0.100f,
+        0.125f,
+        0.150f,
+        0.175f,
+        0.200f,
+        0.225f,
+        0.250f,
+        0.375f,
+        0.500f,
+        0.675f,
+        0.750f,
+        0.875f,
+        1.000f,
+        1.250f,
+        1.375f,
+        1.500f,
+        1.675f,
+        1.750f,
+        1.875f,
+        2.000f
     };
     
     FFractionalZoomLevelsContainer() : CurrentZoom(1.0f) {}
     
-    /**
-     * Get the zoom value for a discrete zoom level index.
-     */
-    static float GetDiscreteZoomLevel(int32 Level)
-    {
-        Level = FMath::Clamp(Level, 0, NumZoomLevels - 1);
-        return DiscreteZoomLevels[Level];
-    }
+    /** Get the zoom value for a discrete zoom level index. */
+    static float GetDiscreteZoomLevel(int32 Level);
     
-    /**
-     * Get the nearest discrete zoom level index for a given zoom amount.
-     */
-    static int32 GetNearestDiscreteLevel(float ZoomAmount)
-    {
-        ZoomAmount = FMath::Clamp(ZoomAmount, MinZoom, MaxZoom);
-        int32 NearestLevel = 0;
-        float SmallestDiff = FMath::Abs(ZoomAmount - DiscreteZoomLevels[0]);
-        for (int32 i = 1; i < NumZoomLevels; ++i)
-        {
-            float Diff = FMath::Abs(ZoomAmount - DiscreteZoomLevels[i]);
-            if (Diff < SmallestDiff)
-            {
-                SmallestDiff = Diff;
-                NearestLevel = i;
-            }
-        }
-        return NearestLevel;
-    }
+    /** Get the nearest discrete zoom level index for a given zoom amount. */
+    static int32 GetNearestDiscreteLevel(float ZoomAmount);
     
-    void SetZoom(float InZoom)
-    {
-        CurrentZoom = FMath::Clamp(InZoom, MinZoom, MaxZoom);
-    }
+    FORCEINLINE void SetZoom(float InZoom) { CurrentZoom = FMath::Clamp(InZoom, MinZoom, MaxZoom); }
     
-    virtual float GetZoomAmount(int32 InZoomLevel) const override
-    {
-        // Ignore the index, just return our current zoom
-        return CurrentZoom;
-    }
-    
-    virtual int32 GetNearestZoomLevel(float InZoomAmount) const override
-    {
-        // Store the requested zoom and return 0 (we only have one "level")
-        const_cast<FFractionalZoomLevelsContainer*>(this)->CurrentZoom = FMath::Clamp(InZoomAmount, MinZoom, MaxZoom);
-        return 0;
-    }
-    
-    virtual FText GetZoomText(int32 InZoomLevel) const override
-    {
-        return FText::Format(NSLOCTEXT("GraphEditor", "ZoomPercent", "Zoom {0}%"), FText::AsNumber(FMath::RoundToInt(CurrentZoom * 100.0f)));
-    }
-    
-    virtual int32 GetNumZoomLevels() const override
-    {
-        return 1;
-    }
-    
-    virtual int32 GetDefaultZoomLevel() const override
-    {
-        return 0;
-    }
-    
-    virtual EGraphRenderingLOD::Type GetLOD(int32 InZoomLevel) const override
-    {
-        if (CurrentZoom <= 0.25f) return EGraphRenderingLOD::LowestDetail;
-        if (CurrentZoom <= 0.50f) return EGraphRenderingLOD::LowDetail;
-        if (CurrentZoom <= 0.75f) return EGraphRenderingLOD::MediumDetail;
-        if (CurrentZoom <= 1.25f) return EGraphRenderingLOD::DefaultDetail;
-        return EGraphRenderingLOD::FullyZoomedIn;
-    }
+    virtual float GetZoomAmount(int32 InZoomLevel) const override;
+    virtual int32 GetNearestZoomLevel(float InZoomAmount) const override;
+    virtual FText GetZoomText(int32 InZoomLevel) const override;
+    FORCEINLINE virtual int32 GetNumZoomLevels() const override { return 1; }
+    FORCEINLINE virtual int32 GetDefaultZoomLevel() const override { return 0; }
+    virtual EGraphRenderingLOD::Type GetLOD(int32 InZoomLevel) const override;
 };
 
 class SPACEMOUSEEDITOR_API FSmEditorManager : public FSpaceMouseManager
@@ -161,7 +110,7 @@ private:
     TWeakPtr<SGraphPanel> ActiveGraphPanel;
     float BlueprintZoomAccumulator = 0.0f;
     bool bInstalledFractionalZoom = false;
-    int32 CurrentDiscreteZoomLevel = 11;  // Default to 100% (index 11 of 0-16)
+    int32 CurrentDiscreteZoomLevel = 12;  // Default to 100% (index 12 of 0-19)
     TSharedPtr<FSmMouseWheelInputProcessor> MouseWheelProcessor;
 
     TSharedPtr<FSmViewportOverlay> OrbitingOverlay;

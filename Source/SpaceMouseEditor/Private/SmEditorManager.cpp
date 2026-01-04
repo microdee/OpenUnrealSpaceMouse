@@ -34,6 +34,58 @@ bool FSmMouseWheelInputProcessor::HandleMouseWheelOrGestureEvent(FSlateApplicati
     return Owner->ApplyMouseWheelZoom(WheelDelta, InWheelEvent.GetScreenSpacePosition(), bCtrlDown);
 }
 
+float FFractionalZoomLevelsContainer::GetDiscreteZoomLevel(int32 Level)
+{
+    Level = FMath::Clamp(Level, 0, NumZoomLevels - 1);
+    return DiscreteZoomLevels[Level];
+}
+
+int32 FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(float ZoomAmount)
+{
+    ZoomAmount = FMath::Clamp(ZoomAmount, MinZoom, MaxZoom);
+    int32 NearestLevel = 0;
+    float SmallestDiff = FMath::Abs(ZoomAmount - DiscreteZoomLevels[0]);
+    for (int32 i = 1; i < NumZoomLevels; ++i)
+    {
+        float Diff = FMath::Abs(ZoomAmount - DiscreteZoomLevels[i]);
+        if (Diff < SmallestDiff)
+        {
+            SmallestDiff = Diff;
+            NearestLevel = i;
+        }
+    }
+    return NearestLevel;
+}
+
+float FFractionalZoomLevelsContainer::GetZoomAmount(int32 InZoomLevel) const
+{
+    return CurrentZoom;
+}
+
+int32 FFractionalZoomLevelsContainer::GetNearestZoomLevel(float InZoomAmount) const
+{
+    const_cast<FFractionalZoomLevelsContainer*>(this)->CurrentZoom = FMath::Clamp(InZoomAmount, MinZoom, MaxZoom);
+    return 0;
+}
+
+FText FFractionalZoomLevelsContainer::GetZoomText(int32 InZoomLevel) const
+{
+    return FText::Format(
+        NSLOCTEXT("GraphEditor", "ZoomPercent", "Zoom {0}%"),
+        FText::AsNumber(FMath::RoundToInt(CurrentZoom * 100.0f))
+    );
+}
+
+// From EGraphRenderingLOD::Type
+EGraphRenderingLOD::Type FFractionalZoomLevelsContainer::GetLOD(int32 InZoomLevel) const
+{
+    if (CurrentZoom <= 0.20f) return EGraphRenderingLOD::LowestDetail;
+    if (CurrentZoom <= 0.25f) return EGraphRenderingLOD::LowDetail;
+    if (CurrentZoom <= 0.675f) return EGraphRenderingLOD::MediumDetail;
+    if (CurrentZoom <= 1.375f) return EGraphRenderingLOD::DefaultDetail;
+    return EGraphRenderingLOD::FullyZoomedIn;
+}
+
 void FSmEditorManager::Initialize()
 {
     FSpaceMouseManager::Initialize();
@@ -557,15 +609,12 @@ bool FSmEditorManager::ApplyMouseWheelZoom(float WheelDelta, FVector2D ScreenSpa
         return false;
     }
     
-    if (!Settings->ActiveInBackground)
-    {
-        if (!FPlatformApplicationMisc::IsThisApplicationForeground())
+    if (!Settings->ActiveInBackground &&
+        !FPlatformApplicationMisc::IsThisApplicationForeground())
         {
             return false;
-        }
     }
     
-    // Find graph panel under cursor using Slate's widget path
     if (!FSlateApplication::IsInitialized())
     {
         return false;
@@ -721,12 +770,10 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
     
     auto Settings = GetMutableDefault<USpaceMouseConfig>();
     
-    if (!Settings->ActiveInBackground)
+    if (!Settings->ActiveInBackground &&
+        !FPlatformApplicationMisc::IsThisApplicationForeground())
     {
-        if (!FPlatformApplicationMisc::IsThisApplicationForeground())
-        {
-            return;
-        }
+        return;
     }
     
     if (trans.IsNearlyZero(SMALL_NUMBER) && rot.IsNearlyZero(SMALL_NUMBER))
@@ -747,9 +794,9 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot)
     // Orientation mapping:
     // - trans.Y = left/right → Blueprint X
     // - trans.X = up/down    → Blueprint Y
-    // - trans.Z = zoom       → Blueprint zoom (now SMOOTH!)
-    float PanX = trans.Y * Settings->BlueprintPanSpeed * (10.0f / 4.0f);
-    float PanY = trans.X * Settings->BlueprintPanSpeed * (10.0f / 4.0f);
+    // - trans.Z = zoom       → Blueprint zoom
+    float PanX = trans.Y * Settings->BlueprintPanSpeed * (2.5f);
+    float PanY = trans.X * Settings->BlueprintPanSpeed * (2.5f);
     
     if (Settings->bBlueprintInvertPanX) PanX = -PanX;
     if (Settings->bBlueprintInvertPanY) PanY = -PanY;
