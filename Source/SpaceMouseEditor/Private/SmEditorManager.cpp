@@ -521,7 +521,7 @@ void FSmEditorManager::ManageActiveBlueprintGraph()
         ActiveGraphPanel.Reset();
         BlueprintZoomAccumulator = 0.0f;
         bInstalledFractionalZoom = false;
-        CurrentDiscreteZoomLevel = 11;
+        CurrentDiscreteZoomLevel = FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(1.0f);
         return;
     }
     
@@ -551,7 +551,7 @@ void FSmEditorManager::ManageActiveBlueprintGraph()
         ActiveGraphPanel.Reset();
         BlueprintZoomAccumulator = 0.0f;
         bInstalledFractionalZoom = false;
-        CurrentDiscreteZoomLevel = 11;
+        CurrentDiscreteZoomLevel = FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(1.0f);
     }
 }
 
@@ -652,19 +652,24 @@ bool FSmEditorManager::ApplyMouseWheelZoom(float WheelDelta, FVector2D ScreenSpa
     
     int32 OldLevel = CurrentDiscreteZoomLevel;
     
-    // Index 11 is 100% - require Ctrl to zoom past it
-    constexpr int32 ZoomLevel100Percent = 11;
+    // Require Ctrl to zoom in beyond 100%; zooming out is always allowed
+    const int32 ZoomLevel100Percent = FFractionalZoomLevelsContainer::GetNearestDiscreteLevel(1.0f);
     
     // Apply discrete zoom step based on wheel direction
     if (WheelDelta > 0)
     {
         // Scroll up = zoom in = higher level
-        int32 MaxLevel = bCtrlDown ? (FFractionalZoomLevelsContainer::NumZoomLevels - 1) : ZoomLevel100Percent;
-        CurrentDiscreteZoomLevel = FMath::Min(CurrentDiscreteZoomLevel + 1, MaxLevel);
+        int32 NextLevel = CurrentDiscreteZoomLevel + 1;
+        if (!bCtrlDown && NextLevel > ZoomLevel100Percent)
+        {
+            // At or above 100%, wheel-up without Ctrl does nothing
+            NextLevel = CurrentDiscreteZoomLevel;
+        }
+        CurrentDiscreteZoomLevel = FMath::Clamp(NextLevel, 0, FFractionalZoomLevelsContainer::NumZoomLevels - 1);
     }
     else
     {
-        // Scroll down = zoom out = lower level
+        // Scroll down = zoom out = lower level (no Ctrl required)
         CurrentDiscreteZoomLevel = FMath::Max(CurrentDiscreteZoomLevel - 1, 0);
     }
     
