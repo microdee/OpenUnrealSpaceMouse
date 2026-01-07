@@ -458,7 +458,11 @@ void FSmEditorManager::MoveActiveViewport(FVector trans, FRotator rot)
         case LVT_OrthoXY:
             {
                 currRot = FRotationMatrix::MakeFromX({0, 0, -1}).Rotator();
+#if UE_VERSION >= MAKE_UE_VERSION(5, 6)
+                currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, -180).Quaternion());
+#else
                 currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, -90).Quaternion());
+#endif
                 break;
             }
         case LVT_OrthoXZ: currRot = FRotationMatrix::MakeFromX({0, -1, 0}).Rotator(); break;
@@ -471,7 +475,11 @@ void FSmEditorManager::MoveActiveViewport(FVector trans, FRotator rot)
         case LVT_OrthoNegativeXY: 
             {
                 currRot = FRotationMatrix::MakeFromX({0, 0, 1}).Rotator();
+#if UE_VERSION >= MAKE_UE_VERSION(5, 6)
+                currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, 180).Quaternion());
+#else
                 currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, 90).Quaternion());
+#endif
                 break;
             }
         case LVT_OrthoNegativeXZ: currRot = FRotationMatrix::MakeFromX({0, 1, 0}).Rotator(); break;
