@@ -8,12 +8,13 @@ public class SpaceMouseRuntime : ModuleRules
     public SpaceMouseRuntime(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.NoPCHs;
+#if UE_5_6_OR_LATER
+        CppCompileWarningSettings.UndefinedIdentifierWarningLevel = WarningLevel.Off;
+#elif UE_5_5_OR_LATER
+        UndefinedIdentifierWarningLevel = WarningLevel.Off;
+#else
         bEnableUndefinedIdentifierWarnings = false;
-
-        IsRedistributableOverride = true;
-        bLegalToDistributeObjectCode = true;
-        bPrecompile = true;
-        PrecompileForTargets = PrecompileTargetsType.Any;
+#endif
 
         if (Target.Version.MajorVersion >= 5)
         {
