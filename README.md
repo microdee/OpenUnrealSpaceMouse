@@ -1,7 +1,7 @@
 # Open Unreal SpaceMouse
 Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed to further differentiate this from 3DConnexion's own plugin. Old URL's for "UE4-SpaceMouse" still should work because how Github keeps old-name alive, but update your URL's just in case.
 
-- [SpaceMouse for Unreal Engine](#spacemouse-for-unreal-engine)
+- [Open Unreal SpaceMouse](#open-unreal-spacemouse)
 - [Installation](#installation)
   - [Disclaimer about the new official plugin shipped by 3DConnexion](#disclaimer-about-the-new-official-plugin-shipped-by-3dconnexion)
   - [Requirements](#requirements)
@@ -15,9 +15,12 @@ Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed t
   - [Misc](#misc)
 - [More info](#more-info)
   - [Changelog](#changelog)
+  - [Upcoming in 2.0](#upcoming-in-20)
+  - [Major changes from version 1.3](#major-changes-from-version-13)
   - [Major changes from version 1.2](#major-changes-from-version-12)
   - [Major changes from version 1.1](#major-changes-from-version-11)
   - [Build a release](#build-a-release)
+  - [Build a release for Linux](#build-a-release-for-linux)
   - [Note on macOS support](#note-on-macos-support)
   - [Known issues:](#known-issues)
   - [Known nuances](#known-nuances)
@@ -118,11 +121,20 @@ Camera controls are slightly different when controlling an Orthographic viewport
 
 [Have any feedback or ideas? Go to Discussions!](https://github.com/microdee/UE4-SpaceMouse/discussions)
 
-[UE4 forum (please prefer Github Discussions)](https://forums.unrealengine.com/unreal-engine/feedback-for-epic/437-support-for-space-navigator-3d-mouse?p=1609440#post1609440)
-
 # More info
 
 ## [Changelog](CHANGELOG.md)
+
+## Upcoming in 2.0
+
+* Rewritten in new and even more modular architecture.
+* SpaceMouse Enterprise has all its buttons working.
+* No need to restart the editor for plugging in new devices.
+* Automatically disable default 3DxWare mappings for Unreal Editor only.
+
+## Major changes from version 1.3
+
+[@litruv](https://github.com/litruv) added graph navigation feature to this plugin, so you can navigate smoothly in you Blueprints, Materials, Niagara systems, or any other visual DSL in Unreal. In the same style as Blender allows you to do with the space-mice in their node-editors.
 
 ## Major changes from version 1.2
 
