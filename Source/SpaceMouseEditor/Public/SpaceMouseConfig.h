@@ -135,7 +135,7 @@ public:
             ToolTip = "Speed multiplier for zooming the Blueprint graph."
         )
     )
-    float BlueprintZoomSpeed = 0.5f;
+    float BlueprintZoomSpeed = 0.25f;
 
     UPROPERTY(
         EditAnywhere,
@@ -165,7 +165,17 @@ public:
             ToolTip = "Invert zoom direction for Blueprint graphs."
         )
     )
-    bool bBlueprintInvertZoom = false;
+	bool bBlueprintInvertZoom = false;
+
+	UPROPERTY(
+		EditAnywhere,
+		Config,
+		Category = "Behavior|Blueprint Graph",
+		meta = (
+			ToolTip = "Select the plane of the device (2 axes) which will control the panning motion of graph editors. See tooltips for specific explanations."
+		)
+	)
+	EOrthoSmPlane BlueprintPanningPlane = EOrthoSmPlane::LateralIsZoomVerticalIsUp;
 
     UPROPERTY(
         EditAnywhere,

@@ -795,12 +795,14 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot, float Del
     // Get current view state
     FVector2D CurrentOffset = GraphPanel->GetViewOffset();
     float CurrentZoom = GraphPanel->GetZoomAmount();
-    
-    // Orientation mapping:
-    // - trans.Y = left/right → Blueprint X
-    // - trans.X = up/down    → Blueprint Y
-    float PanX = trans.Y * Settings->BlueprintPanSpeed * DeltaSecs * 100;
-    float PanY = trans.X * Settings->BlueprintPanSpeed * DeltaSecs * 100;
+
+    constexpr float MagicSpeed = 100;
+
+    float PanX = trans.Y * Settings->BlueprintPanSpeed * DeltaSecs * MagicSpeed;
+    float PanY = Settings->BlueprintPanningPlane == EOrthoSmPlane::LateralIsZoomVerticalIsUp
+        ? trans.Z * Settings->BlueprintPanSpeed * DeltaSecs * MagicSpeed
+        : trans.X * Settings->BlueprintPanSpeed * DeltaSecs * MagicSpeed
+    ;
     
     if (Settings->bBlueprintInvertPanX) PanX = -PanX;
     if (Settings->bBlueprintInvertPanY) PanY = -PanY;
@@ -809,10 +811,11 @@ void FSmEditorManager::MoveBlueprintGraph(FVector trans, FRotator rot, float Del
     FVector2D NewOffset = CurrentOffset;
     NewOffset.X -= PanX / CurrentZoom;
     NewOffset.Y += PanY / CurrentZoom;
-    
-    // SMOOTH FRACTIONAL ZOOM - no more stepping!
-    // With our custom FFractionalZoomLevelsContainer installed, we can set any zoom value
-    float ZoomInput = trans.Z * Settings->BlueprintZoomSpeed * DeltaSecs;
+
+    float ZoomInput = Settings->BlueprintPanningPlane == EOrthoSmPlane::LateralIsZoomVerticalIsUp
+        ? trans.X * Settings->BlueprintZoomSpeed * DeltaSecs
+        : trans.Z * Settings->BlueprintZoomSpeed * DeltaSecs
+    ;
     if (Settings->bBlueprintInvertZoom) ZoomInput = -ZoomInput;
     
     // Apply zoom as a multiplier for smooth scaling
