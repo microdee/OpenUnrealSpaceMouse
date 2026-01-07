@@ -15,6 +15,7 @@
 #include "HAL/PlatformApplicationMisc.h"
 #include "SmUeVersion.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Engine/HitResult.h"
 #include "SGraphPanel.h"
 
 bool FSmMouseWheelInputProcessor::HandleMouseWheelOrGestureEvent(FSlateApplication& SlateApp, const FPointerEvent& InWheelEvent, const FPointerEvent* InGestureEvent)
