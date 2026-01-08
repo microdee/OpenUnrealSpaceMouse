@@ -10,6 +10,7 @@
  */
 
 using System;
+using Microsoft.Extensions.Logging;
 using UnrealBuildTool;
 
 public partial class Hidapi : ModuleRules
@@ -67,10 +68,11 @@ public partial class Hidapi : ModuleRules
 				
 		if (!PlatformSetup || !IncludesSetup)
 		{
-			throw new Exception(
+			Logger.LogWarning(
 				$"hidapi was not set up for {target.Platform}."
 				+ $"\n Did you install the library for {target.Platform}? Run:"
 				+ $"\n > nuke PrepareHidapi --platform {target.Platform}"
+				+  "\n This library may not compile without that."
 			);
 		}
 	}
