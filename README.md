@@ -1,5 +1,5 @@
-<img src="docs/Images/SpacePro-Thumb-2.0-OnLight.png#gh-light-mode-only" />
-<img src="docs/Images/SpacePro-Thumb-2.0-OnDark.png#gh-dark-mode-only" />
+<img src="Docs/Images/SpacePro-Thumb-2.0-OnLight.png#gh-light-mode-only" />
+<img src="Docs/Images/SpacePro-Thumb-2.0-OnDark.png#gh-dark-mode-only" />
 
 Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed to further differentiate this from 3DConnexion's own plugin. Old URL's for "UE4-SpaceMouse" still should work because how Github keeps old-name alive, but update your URL's just in case.
 
