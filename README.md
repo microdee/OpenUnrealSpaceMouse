@@ -1,7 +1,8 @@
-# Open Unreal SpaceMouse 2.0
+<img src="docs/Images/SpacePro-Thumb-2.0-OnLight.png#gh-light-mode-only" />
+<img src="docs/Images/SpacePro-Thumb-2.0-OnDark.png#gh-dark-mode-only" />
+
 Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed to further differentiate this from 3DConnexion's own plugin. Old URL's for "UE4-SpaceMouse" still should work because how Github keeps old-name alive, but update your URL's just in case.
 
-- [Open Unreal SpaceMouse](#open-unreal-spacemouse)
 - [Installation](#installation)
   - [Disclaimer about the new official plugin shipped by 3DConnexion](#disclaimer-about-the-new-official-plugin-shipped-by-3dconnexion)
   - [Requirements](#requirements)
@@ -18,6 +19,7 @@ Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed t
   - [Major changes from version 1.2](#major-changes-from-version-12)
   - [Major changes from version 1.1](#major-changes-from-version-11)
   - [Build a release](#build-a-release)
+  - [Build a release for Linux](#build-a-release-for-linux)
   - [Note on macOS support](#note-on-macos-support)
   - [Known issues:](#known-issues)
   - [Known nuances](#known-nuances)
@@ -54,13 +56,11 @@ This plugin works with the HID device directly and doesn't use 3DxWare (official
 
 You can control any 3D editor viewport (Perspective or Ortho) currently in focus (user needs to click on it first).
 
-![Alt text](/ReadmeMedia/featured.png?raw=true "Coordinates")
-
 Transition speed is controllable via the camera speed setting and the camera speed scalar of the viewport. Camera speed can be increased or decreased with configurable buttons on the spacemice. Multiple devices are supported however their data is merged together into a global context.
 
 On default speeds (speed setting = 4) transition velocity is 1000 units/sec by default and rotation speed is 270°/sec by default. Rotation speed is not affected by camera speed settings. You can change these in the **Editor Preferences -> Plugins -> SpaceMouse** section.
 
-![Alt text](/ReadmeMedia/settings.png?raw=true "Settings")
+![](Docs/Images/settings.png)
 
 ## Buttons
 
