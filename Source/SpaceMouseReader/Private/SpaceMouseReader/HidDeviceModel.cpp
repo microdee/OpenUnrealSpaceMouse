@@ -37,7 +37,7 @@ namespace SpaceMouse::Reader
 					id.With(new Hid::FHidDevicePath(info.Path));
 				});
 			Setup(output.Get(), info);
-			if (output->LastError->IsValid())
+			if (output->LastError.Get().IsValid())
 			{
 				return output->LastError.Get().ToSharedRef();
 			}
