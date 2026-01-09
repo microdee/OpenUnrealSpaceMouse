@@ -15,12 +15,16 @@
 	"IsBetaVersion": false,
 	"Installed": true,
 	"RequiresBuildPlatform": false,
+	"SupportedTargetPlatforms": [
+		"Win64",
+		"Linux"
+	],
 	"Modules": [
 		{
 			"Name": "HIDUE",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Linux",
 				"Win64"
 			]
@@ -29,7 +33,7 @@
 			"Name": "SpaceMouseReader",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Linux",
 				"Win64"
 			]
@@ -38,7 +42,7 @@
 			"Name": "SpaceMouseRuntime",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Linux",
 				"Win64"
 			]
@@ -47,7 +51,7 @@
 			"Name": "SpaceMouseEditor",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit",
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Linux",
 				"Win64"
 			]
