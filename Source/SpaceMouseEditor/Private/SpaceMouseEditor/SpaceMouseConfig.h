@@ -241,12 +241,6 @@ public:
 	)
 	FRuntimeFloatCurve RotationCurve;
 
-	UPROPERTY(EditAnywhere, Config, Category = HID)
-	int MaxHidReadOperationsPerFrame = 2048;
-
-	UPROPERTY(EditAnywhere, Config, Category = HID)
-	bool DisplayDebugInformation = false;
-
 	UPROPERTY(
 		EditAnywhere,
 		Config,

@@ -109,7 +109,6 @@ FSmUserSettings USpaceMouseConfig::GetUserSettings() const
 {
 	return
 	{
-		DisplayDebugInformation,
 		MovementSecondsTolerance,
 		{
 			XTranslationAxisMap,

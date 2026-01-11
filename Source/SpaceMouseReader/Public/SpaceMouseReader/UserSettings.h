@@ -42,9 +42,6 @@ USTRUCT(BlueprintType)
 struct SPACEMOUSEREADER_API FSmUserSettings
 {
     GENERATED_BODY()
-
-    UPROPERTY(BlueprintReadWrite, Category=SpaceMouse)
-    bool bPrintDebug = false;
     
     UPROPERTY(BlueprintReadWrite, Category=SpaceMouse)
     float MovementTimeTolerance = 0.25;
