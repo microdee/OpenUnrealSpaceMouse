@@ -15,6 +15,7 @@
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SmViewportOverlay.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
+#include "Engine/HitResult.h"
 
 namespace SpaceMouse::Editor::Interactor
 {
