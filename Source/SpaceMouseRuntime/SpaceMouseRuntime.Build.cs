@@ -18,6 +18,8 @@ public class SpaceMouseRuntime : ModuleRules
         // C++23
         bUseUnity = false;
         CppStandard = CppStandardVersion.Latest;
+
+        RuntimeDependencies.Add($"{PluginDirectory}/Content/Disable-KMJ.xml", StagedFileType.NonUFS);
         
         PublicDependencyModuleNames.AddRange(new []
         {
@@ -25,6 +27,7 @@ public class SpaceMouseRuntime : ModuleRules
             "CoreUObject",
             "InputDevice",
             "Mcro",
+            "Projects",
 
             "SpaceMouseReader",
         });
