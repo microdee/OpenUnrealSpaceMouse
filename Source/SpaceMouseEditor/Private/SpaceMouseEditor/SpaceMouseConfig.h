@@ -142,7 +142,7 @@ public:
 			ToolTip = "Invert X axis when panning Blueprint graphs."
 		)
 	)
-	bool bBlueprintInvertPanX = false;
+	bool bBlueprintInvertPanX = true;
 
 	UPROPERTY(
 		EditAnywhere,
@@ -152,7 +152,7 @@ public:
 			ToolTip = "Invert Y axis when panning Blueprint graphs."
 		)
 	)
-	bool bBlueprintInvertPanY = false;
+	bool bBlueprintInvertPanY = true;
 
 	UPROPERTY(
 		EditAnywhere,
