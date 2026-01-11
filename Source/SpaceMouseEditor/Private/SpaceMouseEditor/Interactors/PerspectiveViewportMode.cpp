@@ -31,9 +31,25 @@ namespace SpaceMouse::Editor::Interactor
 		auto&& manager = FSmEditorManager::Get();
 		auto& movementState = manager.MovementState;
 		auto trans = manager.GetTranslation();
-		auto rot = manager.GetRotation();
+		auto rot = manager.GetNormalizedRotation();
 		float speedMul = vpCtx.GetCameraSpeedMul();
 		auto settings = GetMutableDefault<USpaceMouseConfig>();
+		auto deltaSecs = FSlateApplication::Get().GetDeltaTime();
+
+		switch (settings->CameraBehavior)
+		{
+		case ESpaceMouseCameraBehavior::CameraDeltaWithRoll:
+		case ESpaceMouseCameraBehavior::CameraDeltaNoRoll:
+			rot.Pitch *= vpClient->ViewFOV * settings->RotationScreensPerSec * deltaSecs;
+			rot.Yaw *= vpClient->ViewFOV * settings->RotationScreensPerSec * deltaSecs;
+			rot.Roll *= settings->RotationDegreesPerSec * deltaSecs;
+			break;
+		case ESpaceMouseCameraBehavior::OrbitingWithRoll:
+		case ESpaceMouseCameraBehavior::OrbitingNoRoll:
+			rot *= settings->RotationDegreesPerSec * deltaSecs;
+			break;
+		}
+
 
 		if (movementState.bOnMovementStartedFrame && settings->DisplayOrbitingPivot)
 			OrbitingOverlay = MakeShared<FSmViewportOverlay>(vpClient);

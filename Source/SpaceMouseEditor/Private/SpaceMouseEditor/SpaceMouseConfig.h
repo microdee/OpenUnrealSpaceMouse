@@ -195,7 +195,24 @@ public:
 	)
 	EOrthoSmPlane OrthoPanningPlane = EOrthoSmPlane::LateralIsZoomVerticalIsUp;
 
-	UPROPERTY(EditAnywhere, Config, Category = "Rotation")
+	UPROPERTY(
+		EditAnywhere,
+		Config,
+		Category = "Rotation",
+		meta = (
+			ToolTip = "Rotation speed in Perspective camera mode is depending on the FOV of the viewport. If this is set to 1.0 then the space-mouse rotates one screen width of FOV in a second."
+		)
+	)
+	float RotationScreensPerSec = 3.0;
+
+	UPROPERTY(
+		EditAnywhere,
+		Config,
+		Category = "Rotation",
+		meta = (
+			ToolTip = "Roll and orbitting speeds are set independent because it is meaningless to bind those to the viewport's FOV"
+		)
+	)
 	float RotationDegreesPerSec = 270;
 
 	UPROPERTY(EditAnywhere, Config, Category = "Translation")

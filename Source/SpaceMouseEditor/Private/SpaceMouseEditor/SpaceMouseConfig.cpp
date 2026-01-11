@@ -121,7 +121,7 @@ FSmUserSettings USpaceMouseConfig::GetUserSettings() const
 			PitchAxisMap,
 			YawAxisMap,
 			RollAxisMap,
-			RotationDegreesPerSec,
+			1.0f,
 			*RotationCurve.GetRichCurveConst()
 		}
 	};
