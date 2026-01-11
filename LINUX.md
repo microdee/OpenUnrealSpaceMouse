@@ -1,14 +1,14 @@
-# UE4-SpaceMouse Build Guide for Linux
+# OpenUnrealSpaceMouse Build Guide for Linux
 
-This guide will help you get up and running with the UE4-SpaceMouse plugin on Linux.
+This guide will help you get up and running with the OpenUnrealSpaceMouse plugin on Linux.
 
 ## Compatibility
 
 The installation process detailed in this guide has been validated to work on the following system configurations:
 
-| Operating System | Engine                  |
-|------------------|-------------------------|
-| Linux Mint 21.2  | UE 5.2.1 (pre-compiled) |
+| Operating System | Engine                 |
+|------------------|------------------------|
+| Linux Mint 21.2  | UE 5.3+ (pre-compiled) |
 
 ## Prerequisites
 
@@ -22,25 +22,37 @@ If you intend to use your SpaceMouse for any other software you should consider 
 
 ## Building
 
-UE4-SpaceMouse doesn't currently provide a pre-built plugin for Linux, so we have to build our own release before installation.
+OpenUnrealSpaceMouse doesn't currently provide a pre-built plugin for Linux, so we have to build our own release before installation.
 
-Download the plugin source code from the [release page](https://github.com/microdee/UE4-SpaceMouse/releases) or clone the repository:
+1. Clone this repository, clone [MCRO](https://mcro.de/mcro/), and install [Nuke.Unreal](https://mcro.de/Nuke.Unreal/) into your project
 
-```
-git clone --recurse-submodules https://github.com/microdee/UE4-SpaceMouse.git
-```
-
-UE4-SpaceMouse includes additional submodules as dependencies, so it's important to clone these as well.
-
-Build the plugin using the `RunUAT.sh` script bundled with the engine. Use the following command. Don't forget to completing each path with your local installation directory:
-
-```
-Engine/Build/BatchFiles/RunUAT.sh BuildPlugin \
--Plugin="UE4-SpaceMouse/SpaceMouse.uplugin" \
--Package="UE4-SpaceMouse/Out/Linux"
+```sh
+git clone --recurse-submodules https://github.com/microdee/OpenUnrealSpaceMouse.git
+git clone --recurse-submodules https://github.com/microdee/mcro.git
+dotnet tool install Nuke.GlobalTool --global
 ```
 
-After completion you will find the compiled plugin in the `UE4-SpaceMouse/Out/Linux` directory.
+2. [Download the Nuke.Unreal bootstrap](https://github.com/microdee/Nuke.Unreal/releases/tag/Fresh) and extract it into your project root
+3. Point nuke to your Unreal installation
+
+```sh
+nuke switch --Unreal ~/MyUnrealStuff/UE_5.6
+```
+
+4. Make an archived release
+
+```sh
+nuke BuildOuesm
+```
+
+5. Your release should show up in `.deploy` folder
+6. Or alternatively you can just build your project with Nuke now (`prepare` only needs to be done once)
+
+```sh
+nuke prepare build-editor
+```
+
+Nuke.Unreal is not well tested on Linux but it should work, please report issues on Linux so I can support it better.
 
 ### Troubleshooting
 
@@ -50,11 +62,13 @@ If you've installed local toolchains for C/C++ development using system packages
 
 ## Installation
 
-After building the plugin copy the `UE4-SpaceMouse/Out/Linux` folder into your project's `Plugins` directory, changing the name in the process to `SpaceMouse`.
+If you just want to use this in your project then you need to [prepare](https://mcro.de/Nuke.Unreal/d3/de9/Targets.html#target-prepare)/[generate](https://mcro.de/Nuke.Unreal/d3/de9/Targets.html#target-generate) your project with [Nuke.Unreal](https://mcro.de/Nuke.Unreal/) and then you can use them as usual.
+
+If you want to make an engine plugin then you can use the archives which `BuildOuesm` has created.
 
 Start the Unreal Editor and verify that the plugin is enabled in **Edit > Plugins > Input Devices**. Then check that plugin settings are available in **Edit > Editor Preferences > Plugins > SpaceMouse**.
 
-Your'e now ready to use your 3DConnexion hardware! Review the [README](README.md) for additional configuration options and how to use the plugin.
+Your're now ready to use your 3DConnexion hardware! Review the [README](README.md) for additional configuration options and how to use the plugin.
 
 ### Troubleshooting
 

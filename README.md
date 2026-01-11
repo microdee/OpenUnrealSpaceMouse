@@ -12,12 +12,15 @@ Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed t
   - [Behavior](#behavior)
     - [Orbiting](#orbiting)
     - [Orthographic viewports](#orthographic-viewports)
+    - [Blueprint and other graphs](#blueprint-and-other-graphs)
   - [Axis configuration](#axis-configuration)
   - [Misc](#misc)
 - [More info](#more-info)
   - [Changelog](#changelog)
-  - [Major changes from version 1.2](#major-changes-from-version-12)
-  - [Major changes from version 1.1](#major-changes-from-version-11)
+  - [Major changes in 2.0](#major-changes-in-20)
+  - [Major changes in 1.3](#major-changes-in-13)
+  - [Major changes in 1.2](#major-changes-in-12)
+  - [Major changes in 1.1](#major-changes-in-11)
   - [Build a release](#build-a-release)
   - [Build a release for Linux](#build-a-release-for-linux)
   - [Note on macOS support](#note-on-macos-support)
@@ -27,17 +30,18 @@ Previously "SpaceMouse for Unreal Engine" or "UE4-SpaceMouse". Name is changed t
 
 # Installation
   
-**Pre-Compiled for UE 4.23 .. 4.26.**
+**Pre-Compiled for Windows.**
 
 Demo video: https://youtu.be/owcSTzs8p-8
 
 **[Download manually for free](https://github.com/microdee/OpenUnrealSpaceMouse/releases/latest)**
 
-**[Buy it via the Marketplace](https://www.unrealengine.com/marketplace/en-US/product/spacemouse-for-unreal-engine)**
-
-**If you have a code project just use this repo as submodule**
-```
+**If you have a code project and want to compile this plugin instead then submodule this repository, submodule [MCRO](https://mcro.de/mcro/), and prepare them with [Nuke.Unreal](https://mcro.de/Nuke.Unreal/)**
+```pwsh
 git submodule add https://github.com/microdee/OpenUnrealSpaceMouse.git Plugins/SpaceMouse
+git submodule add https://github.com/microdee/mcro.git Plugins/MCRO
+# install Nuke.Unreal to your project
+nuke generate
 ```
 
 ## [Disclaimer about the new official plugin shipped by 3DConnexion](DISCLAIMER.md)
@@ -58,7 +62,7 @@ You can control any 3D editor viewport (Perspective or Ortho) currently in focus
 
 Transition speed is controllable via the camera speed setting and the camera speed scalar of the viewport. Camera speed can be increased or decreased with configurable buttons on the spacemice. Multiple devices are supported however their data is merged together into a global context.
 
-On default speeds (speed setting = 4) transition velocity is 1000 units/sec by default and rotation speed is 270°/sec by default. Rotation speed is not affected by camera speed settings. You can change these in the **Editor Preferences -> Plugins -> SpaceMouse** section.
+On default speeds transition velocity is 1000 units/sec. By default rotation speed is 270°/sec on Orbit camera modes and Roll. Rotation speed is not affected by camera speed settings. However it is affected by viewport FOV in CameraDelta modes. You can change these in the **Editor Preferences -> Plugins -> SpaceMouse** section.
 
 ![](Docs/Images/settings.png)
 
@@ -94,9 +98,9 @@ There's a pre-defined default set of bindings you can activate by clicking on _"
 
 **Orbiting Moves/Rotates Object** When true, SpaceMouse represents the Delta movement of "the object" in front of the camera (meaning axes are inverted)
 
-**Orbiting at Fixed Pivot Distance** When enabled, sets a fixed distance for the orbiting mode in UE4 units (usually cm).
+**Orbiting at Fixed Pivot Distance** When enabled, sets a fixed distance for the orbiting mode in Unreal units (usually cm).
 
-**Orbiting Line Trace Length** is the maximum possible radius of the orbiting behavior in UE4 units (usually cm).
+**Orbiting Line Trace Length** is the maximum possible radius of the orbiting behavior in Unreal units (usually cm).
 
 ### Orthographic viewports
 
@@ -108,31 +112,43 @@ Camera controls are slightly different when controlling an Orthographic viewport
 * **Lateral Is Zoom, Vertical Is Up**: Move puck orthogonal to the plane of the Monitor to move around, Push Forward / Pull Backward to zoom.
 * **Lateral Is Up, Vertical Is Zoom**: Move puck orthogonal to the plane of the Desk to move around, Push Down / Pull Up to zoom.
 
+### Blueprint and other graphs
+
+Navigating Blueprints and other visual DSL graphs in Unreal Editor is done the same way as Orthographic vieports. However they can be configured separately in **Blueprint Graph** category.
+
 ## Axis configuration
 
-**Axis mappings** are conversions between the space of spacemice and the space of UE4. You can invert rotations and translations here by flipping the sign. The default values are my subjective preferences (as you can see in the coordinate system image above).
+**Axis mappings** are conversions between the space of spacemice and the space of Unreal. You can invert rotations and translations here by flipping the sign. The default values are my subjective preferences (as you can see in the coordinate system image above).
 
 **Rotation/Translation Curve** are defining the 0..1 curvature from resting state to fully pushed/pulled state of the SpaceMouse puck. Dead-zone, clamping, exponent or other less useful transformations can be expressed with this. Default is 0..1 linear curve, which means no effect.
 
 ## Misc
 
-**Display Debug Information** prints HID data onto the viewport. You don't need to change **Max Hid Read Operations Per Frame**. Just ignore it.
-
 [Report bugs](https://github.com/microdee/OpenUnrealSpaceMouse/issues)
 
 [Have any feedback or ideas? Go to Discussions!](https://github.com/microdee/OpenUnrealSpaceMouse/discussions)
-
-[Unreal Forum (please prefer Github Discussions)](https://forums.unrealengine.com/unreal-engine/feedback-for-epic/437-support-for-space-navigator-3d-mouse?p=1609440#post1609440)
 
 # More info
 
 ## [Changelog](CHANGELOG.md)
 
-## Major changes from version 1.2
+## Major changes in 2.0
+
+* Rewritten in new and even more modular architecture.
+* SpaceMouse Enterprise has all its buttons working.
+* No need to restart the editor for plugging in new devices.
+* Automatically disable default 3DxWare mappings for Unreal Editor only.
+  * This fixes the ancient "bug" of "camera is jumping forward/backward"
+
+## Major changes in 1.3
+
+[@litruv](https://github.com/litruv) added graph navigation feature to this plugin, so you can navigate smoothly in you Blueprints, Materials, Niagara systems, or any other visual DSL in Unreal. In the same style as Blender allows you to do with the space-mice in their node-editors.
+
+## Major changes in 1.2
 
 The structure of SpaceMouse preferences has changed significantly. Upon updating from prior versions (<= 1.1.x) you might need to re-configure the plugin. Don't worry though, the button binding UX has been improved significantly.
 
-## Major changes from version 1.1
+## Major changes in 1.1
 
 Upon updating from prior versions (<= 1.0.x pre-marketplace) please delete both HIDUE and SpaceMouse plugins from your Engine or Project plugins folder!
 
@@ -142,7 +158,16 @@ Upon updating from prior versions (<= 1.0.x pre-marketplace) please delete both 
 
 ## Build a release
 
-If for any reason you cannot use this plugin as a submodule and you want to make a pre-built release to be an engine plugin, then work with the [official test project](https://github.com/microdee/OpenUnrealSpaceMouse-TestProject) and see the build instructions there.
+If for any reason you want to compile this plugin yourself or make a pre-built release to be an engine plugin, then work with the [official test project](https://github.com/microdee/OpenUnrealSpaceMouse-TestProject) and see the build instructions there.
+
+Otherwise if you don't wish to use that project you will need to have [MCRO](https://mcro.de/mcro/), and [Nuke.Unreal](https://mcro.de/Nuke.Unreal/) in order to build this plugin.
+
+```pwsh
+git submodule add https://github.com/microdee/OpenUnrealSpaceMouse.git Plugins/SpaceMouse
+git submodule add https://github.com/microdee/mcro.git Plugins/MCRO
+# install Nuke.Unreal to your project
+nuke generate
+```
 
 ## Build a release for Linux
 
@@ -160,7 +185,8 @@ To make a pre-built release for Linux, read the [Linux Build Guide](LINUX.md).
   * FIXED
 * ~~Upon exiting the editor the engine crashes. I know why it does that but I didn't figure it out quite yet how to prevent it.~~
   * FIXED
-* Jumping forward periodically when leaning / going forward with the camera
+* ~~Jumping forward periodically when leaning / going forward with the camera~~
+  * FIXED
   * __TL;DR:__ Open 3DxWare per-application settings and disable scroll-wheel emulation (disable tilt axis) (per-application settings are opened by the Menu button or bottom left button on your SpaceMouse by default)
   * [See issue](https://github.com/microdee/OpenUnrealSpaceMouse/issues/12)
 * If you install or update 3DxWare with their new plugin (TDxUnrealEditor), and you had this plugin before, you might experience undefined interaction glitches.
@@ -176,6 +202,8 @@ To make a pre-built release for Linux, read the [Linux Build Guide](LINUX.md).
 
 ## Credits
 
+* [@litruv](https://github.com/litruv) For panning BP graphs
+* [@TekuConcept](https://github.com/TekuConcept), [@ericotsn](https://github.com/ericotsn), [@DKingAlpha](https://github.com/DKingAlpha) For linux support
 * [HIDAPI](https://github.com/libusb/hidapi)
 * **Gabor Papp** for initially investigating macOS support
 * From UE4 forums:

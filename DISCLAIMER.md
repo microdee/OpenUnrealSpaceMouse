@@ -6,10 +6,11 @@ TDxUnrealEditor is installed automatically when you install or update the offici
 
 |                                                   Feature |    TDxUnrealEditor     | Open Unreal SpaceMouse |
 | --------------------------------------------------------: | :--------------------: | :--------------------: |
-|                                               Open-Source | ❌ <sup>[1](#f1)</sup> |           ✔           |
+|                                               Open-Source | ✔ <sup>[1](#f1)</sup> |           ✔           |
 |                       Unified 3DxWare features/navigation | ✔ <sup>[2](#f2)</sup> |           ❌           |
 |                       Custom navigation scheme for Unreal |           ❌           |           ✔           |
 | Control any 3D viewport in the editor <sup>[3](#f3)</sup> |           ✔           |           ✔           |
+|    Control Blueprint and other graphs <sup>[8](#f8)</sup> |           ❌           |           ✔           |
 |                                          Supports Windows |           ✔           |           ✔           |
 |                                            Supports Linux |           ❌           |           ✔           |
 |                                              Supports Mac |           ✔           |           ❌           |
@@ -31,13 +32,14 @@ Further differences
 | TDxUnrealEditor                                         | Open Unreal SpaceMouse                               |
 | ------------------------------------------------------- | ---------------------------------------------------- |
 | Better orbit/object mode implementation                 | Orbit/object mode is more barebones                  |
-| Configurable via 3DxWare                                | Configurable from UE4 Editor Preferences             |
+| Configurable via 3DxWare                                | Configurable from Unreal Editor Preferences          |
 | Fit selection to viewport is implemented by 3DConnexion | Uses vanilla Unreal fit to viewport function (F key) |
 
 * This is not a complete list, and it might change with updates
-* <a name="f1">1</a> because of this I couldn't compare implementation differences
+* <a name="f1">1</a> the bridge code between Unreal and the 3DConnexion SDK is now source-available when installing through Fab
 * <a name="f2">2</a> This also allows you to sync your preferences accross multiple applications, Open Unreal SpaceMouse obviously cannot provide or read that.
 * <a name="f3">3</a> Including skeletal and static mesh editors, material preview, niagara editors, or really anything which provides a camera to control
 * <a name="f4">4</a> Not to my knowledge anyway.
 * <a name="f6">6</a> Both via Blueprint and the Input framework
 * <a name="f7">7</a> Last time I've seen it didn't do that.
+* <a name="f8">8</a> This include material editor, niagara systems, behavior trees, anything which has a graph of nodes
