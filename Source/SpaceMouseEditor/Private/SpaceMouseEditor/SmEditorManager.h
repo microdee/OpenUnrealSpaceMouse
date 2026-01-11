@@ -23,6 +23,11 @@ class FEditorViewportClient;
 
 namespace SpaceMouse::Editor
 {
+	namespace Interactor
+	{
+		class IWidgetInteractionContext;
+	}
+
 	using namespace SpaceMouse::Reader;
 	
 	class FSmViewportOverlay;
@@ -34,23 +39,11 @@ namespace SpaceMouse::Editor
 	private:
 		FOnce ShouldInitialize;
 
-		bool bLearning = false;
-		bool bFinishLearning = false;
+		FBool Learning { false };
+		FBool IsAppForeground { false };
+		FBool IsActive { false };
 
-		bool bWasOrbitCamera = false;
-		bool bWasRealtime = false;
-		float LastOrbitDistance = 0;
-		FVector LastOrbitPivot = FVector::ZeroVector;
-		FVector LastOrbitPivotView = FVector::ZeroVector;
-
-		// TODO: Pray to your god that it ain't gonna dangle
-		FEditorViewportClient* ActiveViewportClient = nullptr;
-		FString FocusedVpType {};
-
-		TSharedPtr<FSmViewportOverlay> OrbitingOverlay;
-		
-		static bool AllowPerspectiveCameraMoveEvent(FEditorViewportClient* cvp);
-		FVector GetOrbitingPosDeltaOffset(FRotator rotDelta, float forwardDelta);
+		Interactor::IWidgetInteractionContext* CurrentContext = nullptr;
 
 	protected:
 		virtual FSmUserSettings GetUserSettings() override;
@@ -61,16 +54,13 @@ namespace SpaceMouse::Editor
 
 		void BeginLearning();
 		void EndLearning();
-		bool IsLearning() const { return bLearning; } 
+		bool IsLearning() const { return Learning; }
 
 		virtual void Tick(float DeltaSecs) override;
 		virtual bool IsTickableWhenPaused() const override { return true; }
 		virtual bool IsTickableInEditor() const override { return true; }
 		virtual TStatId GetStatId() const override { return {}; }
-		
-		void ManageOrbitingOverlay();
-		void ManageActiveViewport();
+
 		void TriggerCustomButtons();
-		void MoveActiveViewport(FVector trans, FRotator rot);
 	};
 }

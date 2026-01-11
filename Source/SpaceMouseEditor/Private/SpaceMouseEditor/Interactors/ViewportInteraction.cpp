@@ -14,6 +14,7 @@
 #include "OrthoViewportMode.h"
 #include "PerspectiveViewportMode.h"
 #include "SEditorViewport.h"
+#include "SpaceMouseEditor.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
@@ -22,6 +23,8 @@
 
 namespace SpaceMouse::Editor::Interactor
 {
+	TModuleBoundObject<FSpaceMouseEditorModule, FViewportInteraction> GViewportInteraction {};
+
 	FViewportInteraction::FViewportInteraction()
 	{
 		RegisterContext();
@@ -40,9 +43,9 @@ namespace SpaceMouse::Editor::Interactor
 
 		auto&& vpClients = GEditor->GetAllViewportClients();
 
-		if (!vpClients.Contains(ActiveViewportClient)) ActiveViewportClient = nullptr;
+		if (!vpClients.Contains(ActiveViewportClient)) ActiveViewportClient.Set(nullptr);
 
-		// TODO: handle different kinds of viewports with modular features
+		// TODO: ignore camera movement when the player possesses a Pawn in PIE, but not when ejected or only SIE
 		auto activeVpcCandidate = vpClients
 			| FilterValid()
 			| rv::filter([this](const FEditorViewportClient* cvp)
@@ -62,7 +65,7 @@ namespace SpaceMouse::Editor::Interactor
 			}
 			bVpWadOrbitCamera = cvp->ShouldOrbitCamera();
 			bVpWadRealtime = cvp->IsRealtime();
-			ActiveViewportClient = cvp;
+			ActiveViewportClient.Set(cvp);
 		}
 
 		IsFocused = ActiveViewportClient.Get()
