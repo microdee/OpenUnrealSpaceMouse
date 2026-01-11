@@ -39,6 +39,7 @@ namespace SpaceMouse::Reader
 		ConnectedDevices.Reset();
 		RunInThread(ENamedThreads::AnyThread, SharedThis(this), [this]
 		{
+			FScopeLock Lock(&ConnectedDeviceMutex);
 			uint32 devCombo = 0;
 			auto result = Hid::EnumerateDevices([this, &devCombo](int32, Hid::FHidDeviceInfo const& info)
 			{
@@ -96,6 +97,7 @@ namespace SpaceMouse::Reader
 
 	void FHidDeviceSource::ConnectAvailableDevices()
 	{
+		FScopeLock Lock(&ConnectedDeviceMutex);
 		Devices.Reset(ConnectedDevices.Num());
 		for (FModel const& model : ConnectedDevices)
 			if (auto deviceModel = model.Model.Pin())

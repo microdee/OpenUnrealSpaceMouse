@@ -45,5 +45,8 @@ namespace SpaceMouse::Reader
 		void ConnectAvailableDevices();
 		void FlagDeviceRemove(FString const& path);
 		void RemoveFlaggedDevices();
+
+	private:
+		FCriticalSection ConnectedDeviceMutex;
 	};
 }
