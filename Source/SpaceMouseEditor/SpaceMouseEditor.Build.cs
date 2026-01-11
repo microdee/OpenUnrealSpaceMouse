@@ -36,6 +36,7 @@ public class SpaceMouseEditor : ModuleRules
                 
                 "Slate",
                 "SlateCore",
+                "GraphEditor",
                 "UnrealEd",
                 "EditorStyle",
                 "DetailCustomizations",

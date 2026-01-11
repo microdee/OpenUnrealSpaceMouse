@@ -19,7 +19,9 @@ class FEditorViewportClient;
 
 namespace SpaceMouse::Editor::Interactor
 {
-	class SPACEMOUSEEDITOR_API FViewportInteraction : public IWidgetInteractionContext
+	class SPACEMOUSEEDITOR_API FViewportInteraction
+		: public IWidgetInteractionContext
+		, public IFeatureImplementation
 	{
 	public:
 		FViewportInteraction();
