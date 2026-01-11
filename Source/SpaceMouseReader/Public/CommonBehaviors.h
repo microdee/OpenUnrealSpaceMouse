@@ -1,5 +1,15 @@
-﻿// Copyright 2018-2021 David Morasz All Rights Reserved.
-// This source code is under MIT License https://github.com/microdee/UE4-SpaceMouse/blob/master/LICENSE
+/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
+
+
 
 #pragma once
 
@@ -7,9 +17,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CommonBehaviors.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SPACEMOUSEREADER_API USmCommonBehaviors : public UBlueprintFunctionLibrary
 {
@@ -18,10 +25,10 @@ public:
 
     UFUNCTION(BlueprintPure, Category=SpaceMouse)
     static FVector GetOrbitingTranslationDelta(
-        FVector Pivot,
-        FRotator CurrentRotation,
-        FRotator RotationDelta,
-        float Distance,
-        bool bWithRoll
+        const FVector& pivot,
+        const FRotator& currentRotation,
+        FRotator rotationDelta,
+        float distance,
+        bool withRoll
     );
 };

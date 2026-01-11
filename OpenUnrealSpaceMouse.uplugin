@@ -1,0 +1,57 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "2.0.0",
+	"FriendlyName": "Open Unreal SpaceMouse",
+	"Description": "Control the active editor viewport camera with 3DConnexion SpaceMice",
+	"Category": "Input Devices",
+	"EnabledByDefault": true,
+	"CreatedBy": "microdee",
+	"CreatedByURL": "http://mcro.de",
+	"DocsURL": "https://github.com/microdee/OpenUnrealSpaceMouse",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/ad5ae5bca73f4a84a693394a0542fc92",
+	"SupportURL": "https://github.com/microdee/OpenUnrealSpaceMouse/issues",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"Installed": false,
+	"RequiresBuildPlatform": false,
+	"SupportedTargetPlatforms": [
+		"Win64",
+		"Linux"
+	],
+	"Plugins": [
+		{
+			"Name": "Mcro",
+			"Enabled": true
+		}
+	],
+	"Modules": [
+		{
+			"Name": "SpaceMouseReader",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"PlatformAllowList": [
+				"Linux",
+				"Win64"
+			]
+		},
+		{
+			"Name": "SpaceMouseRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Linux",
+				"Win64"
+			]
+		},
+		{
+			"Name": "SpaceMouseEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"PlatformAllowList": [
+				"Linux",
+				"Win64"
+			]
+		}
+	]
+}

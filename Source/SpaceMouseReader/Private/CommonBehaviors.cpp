@@ -1,27 +1,37 @@
-﻿// Copyright 2018-2021 David Morasz All Rights Reserved.
-// This source code is under MIT License https://github.com/microdee/UE4-SpaceMouse/blob/master/LICENSE
+/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
+
+
 
 
 #include "SpaceMouseReader/Public/CommonBehaviors.h"
 
 FVector USmCommonBehaviors::GetOrbitingTranslationDelta(
-    FVector Pivot,
-    FRotator CurrentRotation,
-    FRotator RotationDelta,
-    float Distance,
-    bool bWithRoll
+    const FVector& pivot,
+    const FRotator& currentRotation,
+    FRotator rotationDelta,
+    float distance,
+    bool withRoll
 ) {
-    if (!bWithRoll)
+    if (!withRoll)
     {
-        const float YawCorr = FMath::Abs(FMath::Cos(FMath::DegreesToRadians(CurrentRotation.Pitch)));
-        RotationDelta.Yaw *= YawCorr;
+        const float yawCorr = FMath::Abs(FMath::Cos(FMath::DegreesToRadians(currentRotation.Pitch)));
+        rotationDelta.Yaw *= yawCorr;
     }
 
-    const FMatrix OrbitTr = FTransform(Pivot).ToMatrixWithScale()
-        * FTransform(RotationDelta).ToMatrixWithScale()
-        * FTransform(FVector(-Distance, 0, 0)).ToMatrixWithScale();
+    const FMatrix orbitTr = FTransform(pivot).ToMatrixWithScale()
+        * FTransform(rotationDelta).ToMatrixWithScale()
+        * FTransform(FVector(-distance, 0, 0)).ToMatrixWithScale();
 
-    FVector Ret = OrbitTr.TransformPosition(FVector::ZeroVector);
-    Ret.X = 0;
-    return Ret;
+    FVector ret = orbitTr.TransformPosition(FVector::ZeroVector);
+    ret.X = 0;
+    return ret;
 }

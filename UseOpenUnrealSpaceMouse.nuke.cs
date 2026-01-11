@@ -14,6 +14,8 @@ using Nuke.Unreal.Plugins;
 public interface IUseOpenUnrealSpaceMouse : INukeBuild
 {
     Target BuildOuesm => _ => _
+        .DependsOn<IUseHidapi>(i => i.PrepareHidapi)
+        .McroDependency()
         .Executes(() =>
         {
             var self = (UnrealBuild)this;
@@ -42,9 +44,5 @@ public interface IUseOpenUnrealSpaceMouse : INukeBuild
                 archives / $"{zipName}-DebugSymbols.zip",
                 f => f.HasExtension(".pdb") || f.HasExtension(".exp")
             );
-
-            Log.Information("Archiving distributable source");
-            var distribution = thisPlugin.GetDistributionOutput(self);
-            distribution.ZipTo(archives / $"{zipName}-Source.zip");
         });
 }

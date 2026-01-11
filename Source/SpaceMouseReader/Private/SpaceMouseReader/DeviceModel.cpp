@@ -1,0 +1,45 @@
+﻿/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
+
+#include "SpaceMouseReader/DeviceModel.h"
+#include "SpaceMouseReader/DeviceFamily.h"
+
+namespace SpaceMouse::Reader
+{
+	TArray<TSharedRef<FDeviceModel>> GAllKnownDeviceModels {};
+
+	FDeviceModel::FDeviceModel(EModelConfidence confidence)
+		: IComposable()
+		, Confidence(confidence)
+	{}
+
+	FDeviceId& FDeviceModel::GetId()
+	{
+		return Get<FDeviceId>();
+	}
+
+	FDeviceId const& FDeviceModel::GetId() const
+	{
+		return Get<FDeviceId>();
+	}
+
+	TArray<TSharedRef<FDeviceModel>> const& GetAllKnownDeviceModels()
+	{
+		if (GAllKnownDeviceModels.IsEmpty())
+		{
+			for (auto familyFactory : IDeviceFamily::IFactory::GetAll())
+			{
+				familyFactory->SubmitKnownDeviceModels(GAllKnownDeviceModels);
+			}
+		}
+		return GAllKnownDeviceModels;
+	}
+}

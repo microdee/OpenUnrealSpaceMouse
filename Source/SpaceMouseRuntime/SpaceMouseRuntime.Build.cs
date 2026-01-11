@@ -1,5 +1,13 @@
-// Copyright 2018-2021 David Morasz All Rights Reserved.
-// This source code is under MIT License https://github.com/microdee/UE4-SpaceMouse/blob/master/LICENSE
+/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
 
 using UnrealBuildTool;
 
@@ -7,32 +15,27 @@ public class SpaceMouseRuntime : ModuleRules
 {
     public SpaceMouseRuntime(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
-#if UE_5_6_OR_LATER
-        CppCompileWarningSettings.UndefinedIdentifierWarningLevel = WarningLevel.Off;
-#elif UE_5_5_OR_LATER
-        UndefinedIdentifierWarningLevel = WarningLevel.Off;
-#else
-        bEnableUndefinedIdentifierWarnings = false;
-#endif
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
 
-        if (Target.Version.MajorVersion >= 5)
-        {
-            PrivateDependencyModuleNames.AddRange(new [] {
-                "ApplicationCore"
-            });
-        }
-            
+        RuntimeDependencies.Add($"{PluginDirectory}/Content/Disable-KMJ.xml", StagedFileType.NonUFS);
         
         PublicDependencyModuleNames.AddRange(new []
         {
             "Core",
             "CoreUObject",
-            "Engine",
+            "InputDevice",
+            "Mcro",
+            "Projects",
 
             "SpaceMouseReader",
+        });
+
+        PrivateDependencyModuleNames.AddRange(new [] {
+            "ApplicationCore",
+            "Engine",
             "InputCore",
-            "InputDevice"
         });
     }
 }

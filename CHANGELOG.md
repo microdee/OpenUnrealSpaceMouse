@@ -1,22 +1,29 @@
 
-# **1.3** (WIP)
+# **2.0** (Current)
 
-### **Goals:**
+* Modernized source code refactored the entire plugin to be very modular
+* License changed to MPL instead of MIT
+* Devices are discovered during runtime, no need to restart the editor for connecting a device.
+* SpaceMouse Enterprise has all its buttons working.
+* Set default 3DxWare profiles for Unreal (and packaged applications) which no longer has mouse-wheel emulations and button bindings
+  * This fixes the ancient "bug" of "camera is jumping forward/backward"
+* Camera rotation speed in CameraDelta modes are dependent on the Viewport FoV
 
-* [ ] Fix the current roadblock with macOS support.
-* [ ] Use official 3DxWare SDK when it's available on Windows as well (use HID as a fallback)
-  * as per request
-* [ ] Improve axis configuration UX
-* [ ] Per-device model default button bindings
-* [ ] Detect device models through the Universal Receiver
+# **1.3**
 
-# **1.2** (Current) (Marketplace)
+* Space-mice can navigate now visual DSL graphs in the editor (Blueprints, Materials, Niagara, etc.) (PR by [litruv](https://github.com/litruv))
+* Comply with viewport changes introduced in Unreal 5.6
 
-### **Goals:**
-* [x] Completely rewrite the SpaceMouseReader module to support more data sources and just have better code quality
-* [x] Participate properly in Unreal's Input Device system (have bindable `FKey`s and axes)
-* [x] Trigger Editor commands directly
-* [x] Support Orthographic viewports
+## 1.3.1 (Fab)
+
+* Fix plugin platform filtering
+
+# **1.2**
+
+* Completely rewrite the SpaceMouseReader module to support more data sources and just have better code quality
+* Participate properly in Unreal's Input Device system (have bindable `FKey`s and axes)
+* Trigger Editor commands directly
+* Support Orthographic viewports
 
 ## 1.2.4
 
@@ -24,35 +31,35 @@
 
 ## 1.2.3-β
 * *RUNTIME*
-  * __^__ SpaceMouse buttons are now properly registered as `FKey`s and as such can be used as Blueprint input events or input events in Slate/UMG widgets
-  * __^__ Separated the single static Blueprint device data getter, into multiple nodes
+  * SpaceMouse buttons are now properly registered as `FKey`s and as such can be used as Blueprint input events or input events in Slate/UMG widgets
+  * Separated the single static Blueprint device data getter, into multiple nodes
 * *EDITOR*
-  * __\+__ **BREAKING CHANGE!** Configuration refactored to support new SpaceMouse `FKey`'s
+  * **BREAKING CHANGE!** Configuration refactored to support new SpaceMouse `FKey`'s
     * Configuration from previous versions will not work.
-  * __\+__ Use the `Keyboard Shortcuts` editor preferences to bind SpaceMouse buttons to any of the pre-existing editor commands
-  * __\+__ Added a "universal" default button binding until the per-device system is ready.
+  * Use the `Keyboard Shortcuts` editor preferences to bind SpaceMouse buttons to any of the pre-existing editor commands
+  * Added a "universal" default button binding until the per-device system is ready.
     * User needs to trigger this configuration from the SpaceMouse preferences
-  * __\+__ Added support for Orthographic viewports
-  * __\+__ Binding the `MenuOptions` SpaceMouse button to open the SpaceMouse preferences by default.
-  * __^__ **BREAKING CHANGE!** Fixed stupid spelling error for Orbiting (with one T).
+  * Added support for Orthographic viewports
+  * Binding the `MenuOptions` SpaceMouse button to open the SpaceMouse preferences by default.
+  * **BREAKING CHANGE!** Fixed stupid spelling error for Orbiting (with one T).
     * User has to re-select orbiting camera behaviors, and reconfigure their settings
 
 ## 1.2.2-α
 * *EDITOR*
-  * __^__ Internal button mappings for devices are complete (copied from Blender)
-  * __^__ Fixed a bug with Universal Receiver not having
-  * __\+__ Started MacOS support but ran into a roadblock issue
+  * Internal button mappings for devices are complete (copied from Blender)
+  * Fixed a bug with Universal Receiver not having
+  * Started MacOS support but ran into a roadblock issue
 
 ## 1.2.1-α
 * *EDITOR*
-  * __\+__ Started support for device type detection and button configuration
-  * __\+__ Test release for the SpaceMouseReader rewrite
+  * Started support for device type detection and button configuration
+  * Test release for the SpaceMouseReader rewrite
 
 ## 1.2.0-α
 * *READER*
-  * __^__ Rewrote the device data reader module so it can support more features, and it has higher quality of code and architecture
-  * __\+__ Among many other benefits it introduced Normalized device data as output.
-  * __\+__ Test release for the SpaceMouseReader rewrite
+  * Rewrote the device data reader module so it can support more features, and it has higher quality of code and architecture
+  * Among many other benefits it introduced Normalized device data as output.
+  * Test release for the SpaceMouseReader rewrite
 
 # **1.1** (Current) (Marketplace)
 
@@ -62,10 +69,10 @@
 # **?.?** (future)
 
 ### **Goals:**
-* [ ] Deal with the TDxUnrealEd collision
-* [ ] Use space mice in any spatial editor, not just viewports like
-  * Blueprint/Material/Niagara/etc graph editors
-  * Sequencers/timelines
-  * Curve editors
-  * etc
+* [x] Deal with the TDxUnrealEd collision
+  * This is dealt with creating xml config files in 3DxWare user settings folder.
+* Use space mice in any spatial editor, not just viewports like
+  * [x] Blueprint/Material/Niagara/etc graph editors
+  * [ ] Sequencers/timelines
+  * [ ] Curve editors
 

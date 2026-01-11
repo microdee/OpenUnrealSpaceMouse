@@ -1,5 +1,15 @@
-// Copyright 2018-2021 David Morasz All Rights Reserved.
-// This source code is under MIT License https://github.com/microdee/UE4-SpaceMouse/blob/master/LICENSE
+/** @noop License Comment
+ *  @file
+ *  @copyright
+ *  This Source Code is subject to the terms of the Mozilla Public License, v2.0.
+ *  If a copy of the MPL was not distributed with this file You can obtain one at
+ *  https://mozilla.org/MPL/2.0/
+ *  
+ *  @author David Mórász
+ *  @date 2025
+ */
+
+
 
 using UnrealBuildTool;
 
@@ -7,40 +17,34 @@ public class SpaceMouseEditor : ModuleRules
 {
     public SpaceMouseEditor(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.NoPCHs;
-#if UE_5_6_OR_LATER
-        CppCompileWarningSettings.UndefinedIdentifierWarningLevel = WarningLevel.Off;
-#elif UE_5_5_OR_LATER
-        UndefinedIdentifierWarningLevel = WarningLevel.Off;
-#else
-        bEnableUndefinedIdentifierWarnings = false;
-#endif
-        
-        PublicDependencyModuleNames.AddRange(new []
-        {
-            "Core",
-            "CoreUObject",
-            "Engine",
-            "InputCore",
-            "PropertyEditor",
-
-            "SpaceMouseReader",
-            "SpaceMouseRuntime"
-        });
+        // C++23
+        bUseUnity = false;
+        CppStandard = CppStandardVersion.Latest;
 
         if (Target.Type == TargetType.Editor)
         {
-            PublicDependencyModuleNames.AddRange(new []
+            PrivateDependencyModuleNames.AddRange(new []
             {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "PropertyEditor",
+
+                "SpaceMouseReader",
+                "SpaceMouseRuntime",
+                
                 "Slate",
                 "SlateCore",
+                "GraphEditor",
                 "UnrealEd",
                 "EditorStyle",
                 "DetailCustomizations",
                 "LevelEditor",
                 "ApplicationCore",
                 "RHI",
-                "GraphEditor"
+                
+                "Mcro",
             });
         }
     }

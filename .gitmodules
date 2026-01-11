@@ -1,4 +1,4 @@
-[submodule "Source/HIDUE"]
-	path = Source/HIDUE
-	url = https://github.com/microdee/HIDUE.git
-	branch = topic/marketplace-compat
+[submodule "Docs/DoxygenAwesome"]
+	path = Docs/DoxygenAwesome
+	url = https://github.com/jothepro/doxygen-awesome-css.git
+	branch = main

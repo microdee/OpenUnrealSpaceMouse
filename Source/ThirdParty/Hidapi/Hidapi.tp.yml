@@ -1,0 +1,9 @@
+name: hidapi
+source: https://github.com/libusb/hidapi
+project: https://libusb.info/hidapi/
+authors:
+    - libusb (https://libusb.info)
+    - Alan Ott, Signal 11 Software
+license: BSD-3-Clause license (https://github.com/libusb/hidapi/blob/master/LICENSE-bsd.txt)
+reasoning: |
+    On paper cross-platform but in practice "it-depends" simple HID wrapper to read data from SpaceMouse devices directly
