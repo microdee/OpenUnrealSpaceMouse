@@ -14,6 +14,7 @@
 
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
+#include "EditorViewportClient.h"
 
 namespace SpaceMouse::Editor::Interactor
 {

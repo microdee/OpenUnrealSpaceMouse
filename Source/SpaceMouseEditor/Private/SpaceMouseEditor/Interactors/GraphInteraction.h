@@ -15,6 +15,8 @@
 #include "CoreMinimal.h"
 #include "SpaceMouseEditor/Interactors/Interactor.h"
 
+class SGraphPanel;
+
 namespace SpaceMouse::Editor::Interactor
 {
 	class FGraphInteraction;

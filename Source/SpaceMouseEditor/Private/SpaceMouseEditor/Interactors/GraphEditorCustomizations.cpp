@@ -13,6 +13,7 @@
 
 #include "SGraphPanel.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "Framework/Application/SlateApplication.h"
 #include "SpaceMouseEditor/Interactors/GraphInteraction.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
 

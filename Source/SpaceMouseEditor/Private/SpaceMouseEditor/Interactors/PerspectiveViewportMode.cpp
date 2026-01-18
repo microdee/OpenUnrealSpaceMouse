@@ -12,9 +12,11 @@
 #include "PerspectiveViewportMode.h"
 
 #include "CommonBehaviors.h"
+#include "EditorViewportClient.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SmViewportOverlay.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Engine/HitResult.h"
 
 namespace SpaceMouse::Editor::Interactor

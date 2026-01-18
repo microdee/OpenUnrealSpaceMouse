@@ -9,6 +9,9 @@
  *  @date 2025
  */
 
+#include "CoreMinimal.h"
+#include "HAL/PlatformFileManager.h"
+#include "Misc/FileHelper.h"
 #include "SpaceMouseRuntime.h"
 #include "Mcro/Common.h"
 
@@ -32,7 +35,7 @@ namespace
 			{
 				platformFile.CreateDirectoryTree(*tdxConfigDir);
 			}
-			if (auto thisPlugin = GetModulePlugin<FSpaceMouseRuntimeModule>())
+			if (auto thisPlugin = IPluginManager::Get().FindPlugin("OpenUnrealSpaceMouse"))
 			{
 				auto programName = FPlatformProcess::ExecutableName();
 

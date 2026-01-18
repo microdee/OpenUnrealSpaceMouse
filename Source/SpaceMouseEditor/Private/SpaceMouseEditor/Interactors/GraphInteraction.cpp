@@ -13,6 +13,7 @@
 
 #include "SGraphPanel.h"
 #include "SpaceMouseEditor.h"
+#include "Framework/Application/SlateApplication.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
 #include "SpaceMouseEditor/Interactors/GraphEditorCustomizations.h"
