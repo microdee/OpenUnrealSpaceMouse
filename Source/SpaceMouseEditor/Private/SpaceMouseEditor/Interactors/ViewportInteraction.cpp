@@ -17,6 +17,8 @@
 #include "SEditorViewport.h"
 #include "SLevelViewport.h"
 #include "SpaceMouseEditor.h"
+#include "ViewportClientNavigationHelper.h"
+#include "Framework/Application/SlateApplication.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
 #include "SpaceMouseEditor/SpaceMouseConfig.h"
@@ -27,9 +29,21 @@ namespace SpaceMouse::Editor::Interactor
 {
 	TModuleBoundObject<FSpaceMouseEditorModule, FViewportInteraction> GViewportInteraction {};
 
+	bool FViewportMouseWheelSpeedChange::HandleMouseWheelOrGestureEvent(FSlateApplication& slateApp, const FPointerEvent& wheelEvent, const FPointerEvent* gestureEvent)
+	{
+		float delta = wheelEvent.GetWheelDelta();
+		if (!FMath::IsNearlyZero(delta))
+		{
+			GViewportInteraction.GetChecked().ChangeCameraSpeed(delta * 0.1f);
+			return true;
+		}
+		return false;
+	}
+
 	FViewportInteraction::FViewportInteraction()
 	{
 		RegisterContext();
+		MouseWheelSpeedChange = MakeShared<FViewportMouseWheelSpeedChange>();
 	}
 
 	void FViewportInteraction::Tick()
@@ -95,18 +109,17 @@ namespace SpaceMouse::Editor::Interactor
 		{
 			auto&& manager = FSmEditorManager::Get();
 			auto settings = GetMutableDefault<USpaceMouseConfig>();
-			float camspeed = ActiveViewportClient->GetCameraSpeedSetting();
 
 			if (!manager.IsLearning())
 			{
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->DecreaseSpeedButton)).OnDown())
-					ActiveViewportClient->SetCameraSpeedSetting(camspeed - 1);
+					ChangeCameraSpeed(-0.5);
 
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->IncreaseSpeedButton)).OnDown())
-					ActiveViewportClient->SetCameraSpeedSetting(camspeed + 1);
+					ChangeCameraSpeed(0.5);
 
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->ResetSpeedButton)).OnDown())
-					ActiveViewportClient->SetCameraSpeedSetting(4);
+					ActiveViewportClient->SetCameraSpeedSettings({1.0});
 
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->ResetRollButton)).OnDown())
 					ActiveViewportClient->RemoveCameraRoll();
@@ -119,12 +132,18 @@ namespace SpaceMouse::Editor::Interactor
 				bVpWasRealtime = ActiveViewportClient->IsRealtime();
 				ActiveViewportClient->ToggleOrbitCamera(false);
 				ActiveViewportClient->SetRealtime(true);
+
+				// Set scroll wheel speed change
+				FSlateApplication::Get().RegisterInputPreProcessor(MouseWheelSpeedChange);
 			}
 
 			if (movementState.bOnMovementEndedFrame)
 			{
 				// ActiveViewportClient->ToggleOrbitCamera(bVpWasOrbitCamera);
 				ActiveViewportClient->SetRealtime(bVpWasRealtime);
+
+				// Unset scroll wheel speed change
+				FSlateApplication::Get().UnregisterInputPreProcessor(MouseWheelSpeedChange);
 			}
 
 		}
@@ -140,5 +159,18 @@ namespace SpaceMouse::Editor::Interactor
 			}
 		}
 		ActiveViewportClient->Viewport->InvalidateHitProxy();
+	}
+
+	void FViewportInteraction::ChangeCameraSpeed(float deltaCoeff)
+	{
+		if (!ActiveViewportClient.Get()) return;
+
+		FEditorViewportCameraSpeedSettings speedSettings = ActiveViewportClient->GetCameraSpeedSettings();
+		const float speed = speedSettings.GetCurrentSpeed();
+		speedSettings.SetCurrentSpeed(deltaCoeff < 0
+			? speed * (1.f - deltaCoeff * -1.f)
+			: speed / (1.f - deltaCoeff)
+		);
+		ActiveViewportClient->SetCameraSpeedSettings(speedSettings);
 	}
 }
