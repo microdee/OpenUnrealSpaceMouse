@@ -11,9 +11,11 @@
 
 #include "ViewportInteraction.h"
 
+#include "LevelEditorViewport.h"
 #include "OrthoViewportMode.h"
 #include "PerspectiveViewportMode.h"
 #include "SEditorViewport.h"
+#include "SLevelViewport.h"
 #include "SpaceMouseEditor.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
@@ -43,7 +45,10 @@ namespace SpaceMouse::Editor::Interactor
 
 		auto&& vpClients = GEditor->GetAllViewportClients();
 
-		if (!vpClients.Contains(ActiveViewportClient)) ActiveViewportClient.Set(nullptr);
+		if (!vpClients.Contains(ActiveViewportClient))
+		{
+			ActiveViewportClient.Set(nullptr);
+		}
 
 		// TODO: ignore camera movement when the player possesses a Pawn in PIE, but not when ejected or only SIE
 		auto activeVpcCandidate = vpClients
@@ -58,14 +63,18 @@ namespace SpaceMouse::Editor::Interactor
 
 		if (auto cvp = activeVpcCandidate | First(nullptr))
 		{
-			if (ActiveViewportClient.Get())
+			cvp = cvp->IsLevelEditorClient() ? GCurrentLevelEditingViewportClient : cvp;
+			if (ActiveViewportClient.Get() != cvp)
 			{
-				ActiveViewportClient->ToggleOrbitCamera(bVpWadOrbitCamera);
-				ActiveViewportClient->SetRealtime(bVpWadRealtime);
+				if (ActiveViewportClient.Get())
+				{
+					ActiveViewportClient->SetRealtime(bVpWasRealtime);
+					// ActiveViewportClient->ToggleOrbitCamera(bVpWasOrbitCamera);
+				}
+				// bVpWasOrbitCamera = cvp->ShouldOrbitCamera();
+				bVpWasRealtime = cvp->IsRealtime();
+				ActiveViewportClient.Set(cvp);
 			}
-			bVpWadOrbitCamera = cvp->ShouldOrbitCamera();
-			bVpWadRealtime = cvp->IsRealtime();
-			ActiveViewportClient.Set(cvp);
 		}
 
 		IsFocused = ActiveViewportClient.Get()
@@ -107,45 +116,29 @@ namespace SpaceMouse::Editor::Interactor
 
 			if (movementState.bOnMovementStartedFrame)
 			{
-				bVpWadRealtime = ActiveViewportClient->IsRealtime();
-				bVpWadOrbitCamera = ActiveViewportClient->ShouldOrbitCamera();
+				bVpWasRealtime = ActiveViewportClient->IsRealtime();
 				ActiveViewportClient->ToggleOrbitCamera(false);
 				ActiveViewportClient->SetRealtime(true);
 			}
 
 			if (movementState.bOnMovementEndedFrame)
 			{
-				ActiveViewportClient->SetRealtime(bVpWadRealtime);
-				//ActiveViewportClient->ToggleOrbitCamera(bVpWadOrbitCamera);
+				// ActiveViewportClient->ToggleOrbitCamera(bVpWasOrbitCamera);
+				ActiveViewportClient->SetRealtime(bVpWasRealtime);
 			}
 
 		}
 
 		IWidgetInteractionContext::Tick();
 
-		if (AllowPerspectiveCameraMoveEvent(ActiveViewportClient))
+		if (ActiveViewportClient.Get() && ActiveViewportClient->IsLevelEditorClient())
 		{
-			// This is important to trigger PerspectiveCameraMoved event from outside.
-			ActiveViewportClient->MoveViewportCamera(FVector::ZeroVector, FRotator::ZeroRotator);
+			auto levelVpc = static_cast<FLevelEditorViewportClient*>(ActiveViewportClient.Get());
+			if (levelVpc->IsLockedToCinematic() || levelVpc->IsAnyActorLocked())
+			{
+				levelVpc->MoveViewportCamera(FVector::ZeroVector, FRotator::ZeroRotator);
+			}
 		}
 		ActiveViewportClient->Viewport->InvalidateHitProxy();
-	}
-
-	float FViewportInteraction::GetCameraSpeedMul() const
-	{
-		float speedExp = FMath::Max(ActiveViewportClient->GetCameraSpeedSetting() - 8, 0);
-		speedExp += FMath::Min(ActiveViewportClient->GetCameraSpeedSetting(), 0);
-		return FMath::Pow(2, speedExp) * ActiveViewportClient->GetCameraSpeed();
-	}
-
-	bool FViewportInteraction::AllowPerspectiveCameraMoveEvent(FEditorViewportClient* cvp)
-	{
-		static TSet IncompatibleViewports =
-		{
-			NAME_"SStaticMeshEditorViewport"
-		};
-
-		FName widgetType = cvp->GetEditorViewportWidget()->GetType();
-		return !IncompatibleViewports.Contains(widgetType);
 	}
 }

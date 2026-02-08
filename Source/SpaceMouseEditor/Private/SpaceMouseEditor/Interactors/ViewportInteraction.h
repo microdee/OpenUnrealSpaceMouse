@@ -30,13 +30,10 @@ namespace SpaceMouse::Editor::Interactor
 		FBool IsFocused { false };
 		virtual void Tick() override;
 
-		float GetCameraSpeedMul() const;
-
 	private:
-		static bool AllowPerspectiveCameraMoveEvent(FEditorViewportClient* cvp);
 
-		bool bVpWadOrbitCamera = false;
-		bool bVpWadRealtime = false;
-
+		// Disabled because functionality was unreliable
+		// bool bVpWasOrbitCamera = false;
+		bool bVpWasRealtime = false;
 	};
 }

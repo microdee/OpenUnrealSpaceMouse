@@ -34,7 +34,7 @@ namespace SpaceMouse::Editor::Interactor
 		auto& movementState = manager.MovementState;
 		auto trans = manager.GetTranslation();
 		auto rot = manager.GetNormalizedRotation();
-		float speedMul = vpCtx.GetCameraSpeedMul();
+		float speedMul = vpClient->GetCameraSpeed();
 		auto settings = GetMutableDefault<USpaceMouseConfig>();
 		auto deltaSecs = FSlateApplication::Get().GetDeltaTime();
 
