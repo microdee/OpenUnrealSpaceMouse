@@ -40,6 +40,7 @@ namespace SpaceMouse::Editor::Interactor
 		FBool IsFocused { false };
 		virtual void Tick() override;
 
+		void ResetSpeed();
 		void ChangeCameraSpeed(float deltaCoeff);
 
 	private:

@@ -14,10 +14,8 @@
 #include "LevelEditorViewport.h"
 #include "OrthoViewportMode.h"
 #include "PerspectiveViewportMode.h"
-#include "SEditorViewport.h"
 #include "SLevelViewport.h"
 #include "SpaceMouseEditor.h"
-#include "ViewportClientNavigationHelper.h"
 #include "Framework/Application/SlateApplication.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "SpaceMouseEditor/SmEditorManager.h"
@@ -119,7 +117,7 @@ namespace SpaceMouse::Editor::Interactor
 					ChangeCameraSpeed(0.5);
 
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->ResetSpeedButton)).OnDown())
-					ActiveViewportClient->SetCameraSpeedSettings({1.0});
+					ResetSpeed();
 
 				if (manager.GetButton(FSmInputDevice::GetButtonFrom(settings->ResetRollButton)).OnDown())
 					ActiveViewportClient->RemoveCameraRoll();
@@ -161,10 +159,20 @@ namespace SpaceMouse::Editor::Interactor
 		ActiveViewportClient->Viewport->InvalidateHitProxy();
 	}
 
+	void FViewportInteraction::ResetSpeed()
+	{
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
+		ActiveViewportClient->SetCameraSpeedSettings({1.0});
+#else
+		ActiveViewportClient->SetCameraSpeedSetting(4);
+#endif
+	}
+
 	void FViewportInteraction::ChangeCameraSpeed(float deltaCoeff)
 	{
 		if (!ActiveViewportClient.Get()) return;
 
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
 		FEditorViewportCameraSpeedSettings speedSettings = ActiveViewportClient->GetCameraSpeedSettings();
 		const float speed = speedSettings.GetCurrentSpeed();
 		speedSettings.SetCurrentSpeed(deltaCoeff < 0
@@ -172,5 +180,9 @@ namespace SpaceMouse::Editor::Interactor
 			: speed / (1.f - deltaCoeff)
 		);
 		ActiveViewportClient->SetCameraSpeedSettings(speedSettings);
+#else
+		int speed = FMath::Clamp(ActiveViewportClient->GetCameraSpeedSetting() + FMath::Sign(deltaCoeff), 1, 8);
+		ActiveViewportClient->SetCameraSpeedSetting(speed);
+#endif
 	}
 }
