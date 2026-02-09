@@ -52,7 +52,7 @@ namespace SpaceMouse::Editor::Interactor
 		case LVT_OrthoXY:
 			{
 				currRot = FRotationMatrix::MakeFromX({0, 0, -1}).Rotator();
-#if UE_VERSION_OLDER_THAN(5, 6, 0)
+#if UNREAL_VERSION(<, 5, 6)
 				currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, -90).Quaternion());
 #else
 				currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, -180).Quaternion());
@@ -69,7 +69,7 @@ namespace SpaceMouse::Editor::Interactor
 		case LVT_OrthoNegativeXY:
 			{
 				currRot = FRotationMatrix::MakeFromX({0, 0, 1}).Rotator();
-#if UE_VERSION_OLDER_THAN(5, 6, 0)
+#if UNREAL_VERSION(<, 5, 6)
 				currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, 90).Quaternion());
 #else
 				currRot = FRotator(currRot.Quaternion() * FRotator(0, 0, 180).Quaternion());

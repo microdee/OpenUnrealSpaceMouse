@@ -161,7 +161,7 @@ namespace SpaceMouse::Editor::Interactor
 
 	void FViewportInteraction::ResetSpeed()
 	{
-#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
+#if UNREAL_VERSION(>=, 5, 7)
 		ActiveViewportClient->SetCameraSpeedSettings({1.0});
 #else
 		ActiveViewportClient->SetCameraSpeedSetting(4);
@@ -172,7 +172,7 @@ namespace SpaceMouse::Editor::Interactor
 	{
 		if (!ActiveViewportClient.Get()) return;
 
-#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
+#if UNREAL_VERSION(>=, 5, 7)
 		FEditorViewportCameraSpeedSettings speedSettings = ActiveViewportClient->GetCameraSpeedSettings();
 		const float speed = speedSettings.GetCurrentSpeed();
 		speedSettings.SetCurrentSpeed(deltaCoeff < 0
