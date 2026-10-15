@@ -77,8 +77,8 @@ namespace SpaceMouse::Editor::Interactor
 		virtual float GetZoomAmount(int32 zoomLevel) const override;
 		virtual int32 GetNearestZoomLevel(float zoomAmount) const override;
 		virtual FText GetZoomText(int32 zoomLevel) const override;
-		FORCEINLINE virtual int32 GetNumZoomLevels() const override { return 1; }
-		FORCEINLINE virtual int32 GetDefaultZoomLevel() const override { return 0; }
+		FORCEINLINE virtual int32 GetNumZoomLevels() const override { return NumZoomLevels; }
+		FORCEINLINE virtual int32 GetDefaultZoomLevel() const override { return 12; }
 		virtual EGraphRenderingLOD::Type GetLOD(int32 zoomLevel) const override;
 	};
 }
