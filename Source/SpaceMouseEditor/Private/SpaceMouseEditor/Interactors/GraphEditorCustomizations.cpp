@@ -141,6 +141,10 @@ namespace SpaceMouse::Editor::Interactor
 
 	float FGraphNavZoomLevelsContainer::GetZoomAmount(int32 zoomLevel) const
 	{
+		if (GetNearestDiscreteLevel(CurrentZoom) != zoomLevel)
+		{
+			CurrentZoom = GetDiscreteZoomLevel(zoomLevel);
+		}
 		return CurrentZoom;
 	}
 
